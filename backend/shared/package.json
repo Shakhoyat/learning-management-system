@@ -1,0 +1,31 @@
+{
+  "name": "lms-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities, models, and configurations for LMS microservices",
+  "main": "index.js",
+  "scripts": {
+    "seed": "node database/seeder.js",
+    "seed:dev": "NODE_ENV=development node database/seeder.js",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "mongoose": "^7.5.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "joi": "^17.9.2",
+    "winston": "^3.10.0",
+    "redis": "^4.6.7",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.0",
+    "moment": "^2.29.4",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "jest": "^29.6.2",
+    "eslint": "^8.47.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
