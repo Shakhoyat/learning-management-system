@@ -1,71 +1,71 @@
 {
-  "name": "lms-backend",
-  "version": "1.0.0",
-  "description": "Learning Management System Backend - Microservices Architecture",
-  "main": "index.js",
-  "scripts": {
-    "setup": "powershell -ExecutionPolicy Bypass -File setup.ps1",
-    "setup:unix": "chmod +x setup.sh && ./setup.sh",
-    "install:all": "npm run install:services && npm run install:gateway && npm run install:workers && npm run install:shared",
-    "install:services": "cd services/auth-service && npm install && cd ../user-service && npm install && cd ../skill-service && npm install && cd ../matching-service && npm install && cd ../session-service && npm install && cd ../payment-service && npm install && cd ../notification-service && npm install && cd ../..",
-    "install:gateway": "cd gateway && npm install && cd ..",
-    "install:workers": "cd workers && npm install && cd ..",
-    "install:shared": "cd shared && npm install && cd ..",
-    "dev:all": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:user\" \"npm run dev:skill\" \"npm run dev:matching\" \"npm run dev:session\" \"npm run dev:payment\" \"npm run dev:notification\"",
-    "dev:gateway": "cd gateway && npm run dev",
-    "dev:auth": "cd services/auth-service && npm run dev",
-    "dev:user": "cd services/user-service && npm run dev",
-    "dev:skill": "cd services/skill-service && npm run dev",
-    "dev:matching": "cd services/matching-service && npm run dev",
-    "dev:session": "cd services/session-service && npm run dev",
-    "dev:payment": "cd services/payment-service && npm run dev",
-    "dev:notification": "cd services/notification-service && npm run dev",
-    "dev:workers": "cd workers && npm run dev",
-    "start": "pm2 start ecosystem.config.js",
-    "stop": "pm2 stop ecosystem.config.js",
-    "restart": "pm2 restart ecosystem.config.js",
-    "logs": "pm2 logs",
-    "status": "pm2 status",
-    "test:all": "npm run test:services && npm run test:gateway && npm run test:workers",
-    "test:services": "cd services/auth-service && npm test && cd ../user-service && npm test && cd ../skill-service && npm test && cd ../matching-service && npm test && cd ../session-service && npm test && cd ../payment-service && npm test && cd ../notification-service && npm test && cd ../..",
-    "test:gateway": "cd gateway && npm test && cd ..",
-    "test:workers": "cd workers && npm test && cd ..",
-    "lint:all": "npm run lint:services && npm run lint:gateway && npm run lint:workers",
-    "lint:services": "cd services/auth-service && npm run lint && cd ../user-service && npm run lint && cd ../skill-service && npm run lint && cd ../matching-service && npm run lint && cd ../session-service && npm run lint && cd ../payment-service && npm run lint && cd ../notification-service && npm run lint && cd ../..",
-    "lint:gateway": "cd gateway && npm run lint && cd ..",
-    "lint:workers": "cd workers && npm run lint && cd ..",
-    "clean": "npm run clean:services && npm run clean:gateway && npm run clean:workers",
-    "clean:services": "cd services/auth-service && rm -rf node_modules && cd ../user-service && rm -rf node_modules && cd ../skill-service && rm -rf node_modules && cd ../matching-service && rm -rf node_modules && cd ../session-service && rm -rf node_modules && cd ../payment-service && rm -rf node_modules && cd ../notification-service && rm -rf node_modules && cd ../..",
-    "clean:gateway": "cd gateway && rm -rf node_modules && cd ..",
-    "clean:workers": "cd workers && rm -rf node_modules && cd ..",
-    "clean:shared": "cd shared && rm -rf node_modules && cd .."
-  },
-  "keywords": [
-    "learning-management-system",
-    "microservices",
-    "nodejs",
-    "express",
-    "mongodb",
-    "redis",
-    "jwt",
-    "education"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.2.2",
-    "pm2": "^5.3.0"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/learning-management-system.git"
-  },
-  "bugs": {
-    "url": "https://github.com/your-username/learning-management-system/issues"
-  },
-  "homepage": "https://github.com/your-username/learning-management-system#readme"
+    "name": "lms-backend",
+    "version": "1.0.0",
+    "description": "Learning Management System Backend - Microservices Architecture",
+    "main": "index.js",
+    "scripts": {
+        "setup": "powershell -ExecutionPolicy Bypass -File setup.ps1",
+        "setup:unix": "chmod +x setup.sh && ./setup.sh",
+        "install:all": "npm run install:services && npm run install:gateway && npm run install:workers && npm run install:shared",
+        "install:services": "cd services/auth-service && npm install && cd ../user-service && npm install && cd ../skill-service && npm install && cd ../matching-service && npm install && cd ../session-service && npm install && cd ../payment-service && npm install && cd ../notification-service && npm install && cd ../..",
+        "install:gateway": "cd gateway && npm install && cd ..",
+        "install:workers": "cd workers && npm install && cd ..",
+        "install:shared": "cd shared && npm install && cd ..",
+        "dev:all": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:user\" \"npm run dev:skill\" \"npm run dev:matching\" \"npm run dev:session\" \"npm run dev:payment\" \"npm run dev:notification\"",
+        "dev:gateway": "cd gateway && npm run dev",
+        "dev:auth": "cd services/auth-service && npm run dev",
+        "dev:user": "cd services/user-service && npm run dev",
+        "dev:skill": "cd services/skill-service && npm run dev",
+        "dev:matching": "cd services/matching-service && npm run dev",
+        "dev:session": "cd services/session-service && npm run dev",
+        "dev:payment": "cd services/payment-service && npm run dev",
+        "dev:notification": "cd services/notification-service && npm run dev",
+        "dev:workers": "cd workers && npm run dev",
+        "start": "pm2 start ecosystem.config.js",
+        "stop": "pm2 stop ecosystem.config.js",
+        "restart": "pm2 restart ecosystem.config.js",
+        "logs": "pm2 logs",
+        "status": "pm2 status",
+        "test:all": "npm run test:services && npm run test:gateway && npm run test:workers",
+        "test:services": "cd services/auth-service && npm test && cd ../user-service && npm test && cd ../skill-service && npm test && cd ../matching-service && npm test && cd ../session-service && npm test && cd ../payment-service && npm test && cd ../notification-service && npm test && cd ../..",
+        "test:gateway": "cd gateway && npm test && cd ..",
+        "test:workers": "cd workers && npm test && cd ..",
+        "lint:all": "npm run lint:services && npm run lint:gateway && npm run lint:workers",
+        "lint:services": "cd services/auth-service && npm run lint && cd ../user-service && npm run lint && cd ../skill-service && npm run lint && cd ../matching-service && npm run lint && cd ../session-service && npm run lint && cd ../payment-service && npm run lint && cd ../notification-service && npm run lint && cd ../..",
+        "lint:gateway": "cd gateway && npm run lint && cd ..",
+        "lint:workers": "cd workers && npm run lint && cd ..",
+        "clean": "npm run clean:services && npm run clean:gateway && npm run clean:workers",
+        "clean:services": "cd services/auth-service && rm -rf node_modules && cd ../user-service && rm -rf node_modules && cd ../skill-service && rm -rf node_modules && cd ../matching-service && rm -rf node_modules && cd ../session-service && rm -rf node_modules && cd ../payment-service && rm -rf node_modules && cd ../notification-service && rm -rf node_modules && cd ../..",
+        "clean:gateway": "cd gateway && rm -rf node_modules && cd ..",
+        "clean:workers": "cd workers && rm -rf node_modules && cd ..",
+        "clean:shared": "cd shared && rm -rf node_modules && cd .."
+    },
+    "keywords": [
+        "learning-management-system",
+        "microservices",
+        "nodejs",
+        "express",
+        "mongodb",
+        "redis",
+        "jwt",
+        "education"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "devDependencies": {
+        "concurrently": "^8.2.2",
+        "pm2": "^5.3.0"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/your-username/learning-management-system.git"
+    },
+    "bugs": {
+        "url": "https://github.com/your-username/learning-management-system/issues"
+    },
+    "homepage": "https://github.com/your-username/learning-management-system#readme"
 }
