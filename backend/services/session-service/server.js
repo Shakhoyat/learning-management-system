@@ -139,6 +139,8 @@ async function startServer() {
 
     // Start the server
     const serverInstance = server.listen(PORT, () => {
+      // //database calling here
+      // connectDB();
       logger.info(`Session service with WebSocket running on port ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV || "development"}`);
       logger.info(`Process ID: ${process.pid}`);
