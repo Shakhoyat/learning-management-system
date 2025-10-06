@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import CollaborationClient from '../utils/CollaborationClient';
+import { useState, useEffect, useRef, useCallback } from "react";
+import CollaborationClient from "../utils/CollaborationClient";
 
 /**
  * Hook for Video Conference functionality
@@ -10,10 +10,10 @@ export const useVideoConference = (user, sessionId) => {
   const [mediaState, setMediaState] = useState({
     video: true,
     audio: true,
-    screenShare: false
+    screenShare: false,
   });
   const [connectionError, setConnectionError] = useState(null);
-  
+
   const collaborationClient = useRef(null);
   const peerConnections = useRef(new Map());
 
@@ -24,8 +24,8 @@ export const useVideoConference = (user, sessionId) => {
     collaborationClient.current.init(user, sessionId);
 
     const handleParticipantJoined = (participantData) => {
-      setParticipants(prev => {
-        if (!prev.find(p => p.userId === participantData.userId)) {
+      setParticipants((prev) => {
+        if (!prev.find((p) => p.userId === participantData.userId)) {
           return [...prev, participantData];
         }
         return prev;
@@ -33,10 +33,14 @@ export const useVideoConference = (user, sessionId) => {
     };
 
     const handleParticipantLeft = (participantData) => {
-      setParticipants(prev => prev.filter(p => p.userId !== participantData.userId));
-      
+      setParticipants((prev) =>
+        prev.filter((p) => p.userId !== participantData.userId)
+      );
+
       // Clean up peer connection
-      const peerConnection = peerConnections.current.get(participantData.socketId);
+      const peerConnection = peerConnections.current.get(
+        participantData.socketId
+      );
       if (peerConnection) {
         peerConnection.close();
         peerConnections.current.delete(participantData.socketId);
@@ -47,13 +51,13 @@ export const useVideoConference = (user, sessionId) => {
       try {
         const peerConnection = createPeerConnection(data.sender);
         await peerConnection.setRemoteDescription(data.offer);
-        
+
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
-        
+
         collaborationClient.current.sendAnswer(data.sender, answer);
       } catch (error) {
-        console.error('Error handling offer:', error);
+        console.error("Error handling offer:", error);
         setConnectionError(error.message);
       }
     };
@@ -65,7 +69,7 @@ export const useVideoConference = (user, sessionId) => {
           await peerConnection.setRemoteDescription(data.answer);
         }
       } catch (error) {
-        console.error('Error handling answer:', error);
+        console.error("Error handling answer:", error);
         setConnectionError(error.message);
       }
     };
@@ -77,7 +81,7 @@ export const useVideoConference = (user, sessionId) => {
           await peerConnection.addIceCandidate(data.candidate);
         }
       } catch (error) {
-        console.error('Error handling ICE candidate:', error);
+        console.error("Error handling ICE candidate:", error);
       }
     };
 
@@ -90,49 +94,45 @@ export const useVideoConference = (user, sessionId) => {
       handleIceCandidate
     );
 
-    socket.on('connect', () => setIsConnected(true));
-    socket.on('disconnect', () => setIsConnected(false));
+    socket.on("connect", () => setIsConnected(true));
+    socket.on("disconnect", () => setIsConnected(false));
 
     // Custom event handlers
-    collaborationClient.current.on('videoToggle', (data) => {
-      setParticipants(prev => 
-        prev.map(p => 
-          p.userId === data.userId 
-            ? { ...p, videoEnabled: data.enabled }
+    collaborationClient.current.on("videoToggle", (data) => {
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.userId === data.userId ? { ...p, videoEnabled: data.enabled } : p
+        )
+      );
+    });
+
+    collaborationClient.current.on("audioToggle", (data) => {
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.userId === data.userId ? { ...p, audioEnabled: data.enabled } : p
+        )
+      );
+    });
+
+    collaborationClient.current.on("screenShare", (data) => {
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.userId === data.userId
+            ? { ...p, screenSharing: data.action === "started" }
             : p
         )
       );
     });
 
-    collaborationClient.current.on('audioToggle', (data) => {
-      setParticipants(prev => 
-        prev.map(p => 
-          p.userId === data.userId 
-            ? { ...p, audioEnabled: data.enabled }
-            : p
-        )
-      );
-    });
-
-    collaborationClient.current.on('screenShare', (data) => {
-      setParticipants(prev => 
-        prev.map(p => 
-          p.userId === data.userId 
-            ? { ...p, screenSharing: data.action === 'started' }
-            : p
-        )
-      );
-    });
-
-    collaborationClient.current.on('error', (error) => {
+    collaborationClient.current.on("error", (error) => {
       setConnectionError(error.message);
     });
 
     return () => {
       // Cleanup peer connections
-      peerConnections.current.forEach(pc => pc.close());
+      peerConnections.current.forEach((pc) => pc.close());
       peerConnections.current.clear();
-      
+
       // Disconnect
       collaborationClient.current?.disconnectAll();
     };
@@ -141,9 +141,9 @@ export const useVideoConference = (user, sessionId) => {
   const createPeerConnection = (socketId) => {
     const configuration = {
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: "stun:stun.l.google.com:19302" },
         // Add TURN servers for production
-      ]
+      ],
     };
 
     const peerConnection = new RTCPeerConnection(configuration);
@@ -157,11 +157,9 @@ export const useVideoConference = (user, sessionId) => {
 
     peerConnection.ontrack = (event) => {
       // Handle incoming media stream
-      setParticipants(prev => 
-        prev.map(p => 
-          p.socketId === socketId 
-            ? { ...p, stream: event.streams[0] }
-            : p
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.socketId === socketId ? { ...p, stream: event.streams[0] } : p
         )
       );
     };
@@ -170,22 +168,22 @@ export const useVideoConference = (user, sessionId) => {
   };
 
   const toggleVideo = useCallback((enabled) => {
-    setMediaState(prev => ({ ...prev, video: enabled }));
+    setMediaState((prev) => ({ ...prev, video: enabled }));
     collaborationClient.current?.toggleVideo(enabled);
   }, []);
 
   const toggleAudio = useCallback((enabled) => {
-    setMediaState(prev => ({ ...prev, audio: enabled }));
+    setMediaState((prev) => ({ ...prev, audio: enabled }));
     collaborationClient.current?.toggleAudio(enabled);
   }, []);
 
   const startScreenShare = useCallback(() => {
-    setMediaState(prev => ({ ...prev, screenShare: true }));
+    setMediaState((prev) => ({ ...prev, screenShare: true }));
     collaborationClient.current?.startScreenShare();
   }, []);
 
   const stopScreenShare = useCallback(() => {
-    setMediaState(prev => ({ ...prev, screenShare: false }));
+    setMediaState((prev) => ({ ...prev, screenShare: false }));
     collaborationClient.current?.stopScreenShare();
   }, []);
 
@@ -198,7 +196,7 @@ export const useVideoConference = (user, sessionId) => {
     toggleAudio,
     startScreenShare,
     stopScreenShare,
-    clearError: () => setConnectionError(null)
+    clearError: () => setConnectionError(null),
   };
 };
 
@@ -209,7 +207,7 @@ export const useWhiteboard = (user, sessionId) => {
   const [drawingData, setDrawingData] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [activeUsers, setActiveUsers] = useState([]);
-  
+
   const collaborationClient = useRef(null);
 
   useEffect(() => {
@@ -219,11 +217,13 @@ export const useWhiteboard = (user, sessionId) => {
     collaborationClient.current.init(user, sessionId);
 
     const handleDraw = (drawData) => {
-      setDrawingData(prev => [...prev, drawData]);
+      setDrawingData((prev) => [...prev, drawData]);
     };
 
     const handleErase = (eraseData) => {
-      setDrawingData(prev => prev.filter(item => !eraseData.erasedIds?.includes(item.id)));
+      setDrawingData((prev) =>
+        prev.filter((item) => !eraseData.erasedIds?.includes(item.id))
+      );
     };
 
     const handleClear = () => {
@@ -242,16 +242,19 @@ export const useWhiteboard = (user, sessionId) => {
       handleStateUpdate
     );
 
-    socket.on('connect', () => setIsConnected(true));
-    socket.on('disconnect', () => setIsConnected(false));
+    socket.on("connect", () => setIsConnected(true));
+    socket.on("disconnect", () => setIsConnected(false));
 
     // User join/leave events
-    collaborationClient.current.on('whiteboardUserJoined', (data) => {
-      setActiveUsers(prev => [...prev.filter(u => u.userId !== data.userId), data]);
+    collaborationClient.current.on("whiteboardUserJoined", (data) => {
+      setActiveUsers((prev) => [
+        ...prev.filter((u) => u.userId !== data.userId),
+        data,
+      ]);
     });
 
-    collaborationClient.current.on('whiteboardUserLeft', (data) => {
-      setActiveUsers(prev => prev.filter(u => u.userId !== data.userId));
+    collaborationClient.current.on("whiteboardUserLeft", (data) => {
+      setActiveUsers((prev) => prev.filter((u) => u.userId !== data.userId));
     });
 
     return () => {
@@ -259,14 +262,17 @@ export const useWhiteboard = (user, sessionId) => {
     };
   }, [user, sessionId]);
 
-  const draw = useCallback((drawData) => {
-    // Add to local state immediately for responsiveness
-    const localDrawData = { ...drawData, id: Date.now(), userId: user.id };
-    setDrawingData(prev => [...prev, localDrawData]);
-    
-    // Send to server
-    collaborationClient.current?.draw(localDrawData);
-  }, [user]);
+  const draw = useCallback(
+    (drawData) => {
+      // Add to local state immediately for responsiveness
+      const localDrawData = { ...drawData, id: Date.now(), userId: user.id };
+      setDrawingData((prev) => [...prev, localDrawData]);
+
+      // Send to server
+      collaborationClient.current?.draw(localDrawData);
+    },
+    [user]
+  );
 
   const erase = useCallback((eraseData) => {
     collaborationClient.current?.erase(eraseData);
@@ -283,7 +289,7 @@ export const useWhiteboard = (user, sessionId) => {
     activeUsers,
     draw,
     erase,
-    clearBoard
+    clearBoard,
   };
 };
 
@@ -291,13 +297,13 @@ export const useWhiteboard = (user, sessionId) => {
  * Hook for Code Collaboration functionality
  */
 export const useCodeCollaboration = (user, sessionId, fileId) => {
-  const [code, setCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("javascript");
   const [collaborators, setCollaborators] = useState([]);
   const [cursors, setCursors] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [executionResult, setExecutionResult] = useState(null);
-  
+
   const collaborationClient = useRef(null);
 
   useEffect(() => {
@@ -308,23 +314,26 @@ export const useCodeCollaboration = (user, sessionId, fileId) => {
 
     const handleCodeChange = (changeData) => {
       // Apply operational transformation
-      setCode(prev => applyChange(prev, changeData));
+      setCode((prev) => applyChange(prev, changeData));
     };
 
     const handleCursorUpdate = (cursorData) => {
-      setCursors(prev => {
-        const filtered = prev.filter(c => c.userId !== cursorData.userId);
+      setCursors((prev) => {
+        const filtered = prev.filter((c) => c.userId !== cursorData.userId);
         return [...filtered, cursorData];
       });
     };
 
     const handleCollaboratorJoined = (data) => {
-      setCollaborators(prev => [...prev.filter(c => c.userId !== data.userId), data]);
+      setCollaborators((prev) => [
+        ...prev.filter((c) => c.userId !== data.userId),
+        data,
+      ]);
     };
 
     const handleCollaboratorLeft = (data) => {
-      setCollaborators(prev => prev.filter(c => c.userId !== data.userId));
-      setCursors(prev => prev.filter(c => c.userId !== data.userId));
+      setCollaborators((prev) => prev.filter((c) => c.userId !== data.userId));
+      setCursors((prev) => prev.filter((c) => c.userId !== data.userId));
     };
 
     const handleExecutionResult = (result) => {
@@ -343,20 +352,20 @@ export const useCodeCollaboration = (user, sessionId, fileId) => {
       handleExecutionResult
     );
 
-    socket.on('connect', () => setIsConnected(true));
-    socket.on('disconnect', () => setIsConnected(false));
+    socket.on("connect", () => setIsConnected(true));
+    socket.on("disconnect", () => setIsConnected(false));
 
     // Handle file content and cursors
-    collaborationClient.current.on('fileContent', (content) => {
+    collaborationClient.current.on("fileContent", (content) => {
       setCode(content.content);
       setLanguage(content.language);
     });
 
-    collaborationClient.current.on('activeCursors', (activeCursors) => {
+    collaborationClient.current.on("activeCursors", (activeCursors) => {
       setCursors(activeCursors);
     });
 
-    collaborationClient.current.on('executionError', (error) => {
+    collaborationClient.current.on("executionError", (error) => {
       setExecutionResult({ error: error.message, timestamp: Date.now() });
     });
 
@@ -367,8 +376,8 @@ export const useCodeCollaboration = (user, sessionId, fileId) => {
 
   const sendCodeChange = useCallback((changeData) => {
     // Apply change locally immediately
-    setCode(prev => applyChange(prev, changeData));
-    
+    setCode((prev) => applyChange(prev, changeData));
+
     // Send to server
     collaborationClient.current?.sendCodeChange(changeData);
   }, []);
@@ -383,10 +392,17 @@ export const useCodeCollaboration = (user, sessionId, fileId) => {
 
   // Simple change application (in production, use proper OT)
   const applyChange = (currentCode, change) => {
-    if (change.type === 'insert') {
-      return currentCode.slice(0, change.position) + change.text + currentCode.slice(change.position);
-    } else if (change.type === 'delete') {
-      return currentCode.slice(0, change.position) + currentCode.slice(change.position + change.length);
+    if (change.type === "insert") {
+      return (
+        currentCode.slice(0, change.position) +
+        change.text +
+        currentCode.slice(change.position)
+      );
+    } else if (change.type === "delete") {
+      return (
+        currentCode.slice(0, change.position) +
+        currentCode.slice(change.position + change.length)
+      );
     }
     return currentCode;
   };
@@ -401,7 +417,7 @@ export const useCodeCollaboration = (user, sessionId, fileId) => {
     sendCodeChange,
     sendCursorPosition,
     executeCode,
-    setLanguage
+    setLanguage,
   };
 };
 
@@ -412,7 +428,7 @@ export const useChat = (user, sessionId) => {
   const [messages, setMessages] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isTyping, setIsTyping] = useState([]);
-  
+
   const collaborationClient = useRef(null);
 
   useEffect(() => {
@@ -422,7 +438,7 @@ export const useChat = (user, sessionId) => {
     collaborationClient.current.init(user, sessionId);
 
     const handleMessage = (message) => {
-      setMessages(prev => [message, ...prev]);
+      setMessages((prev) => [message, ...prev]);
     };
 
     const handleHistoryLoaded = (history) => {
@@ -435,15 +451,15 @@ export const useChat = (user, sessionId) => {
       handleHistoryLoaded
     );
 
-    socket.on('connect', () => setIsConnected(true));
-    socket.on('disconnect', () => setIsConnected(false));
+    socket.on("connect", () => setIsConnected(true));
+    socket.on("disconnect", () => setIsConnected(false));
 
     return () => {
       collaborationClient.current?.disconnectAll();
     };
   }, [user, sessionId]);
 
-  const sendMessage = useCallback((content, type = 'text') => {
+  const sendMessage = useCallback((content, type = "text") => {
     if (content.trim()) {
       collaborationClient.current?.sendMessage(content, type);
     }
@@ -453,6 +469,6 @@ export const useChat = (user, sessionId) => {
     messages,
     isConnected,
     isTyping,
-    sendMessage
+    sendMessage,
   };
 };
