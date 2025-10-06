@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // Database connection configuration
 const connectDB = async () => {
@@ -9,29 +9,28 @@ const connectDB = async () => {
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
-    
+
     // Set up connection event listeners
-    mongoose.connection.on('connected', () => {
-      console.log('Mongoose connected to MongoDB');
+    mongoose.connection.on("connected", () => {
+      console.log("Mongoose connected to MongoDB");
     });
 
-    mongoose.connection.on('error', (err) => {
-      console.error('Mongoose connection error:', err);
+    mongoose.connection.on("error", (err) => {
+      console.error("Mongoose connection error:", err);
     });
 
-    mongoose.connection.on('disconnected', () => {
-      console.log('Mongoose disconnected from MongoDB');
+    mongoose.connection.on("disconnected", () => {
+      console.log("Mongoose disconnected from MongoDB");
     });
 
     // Graceful shutdown
-    process.on('SIGINT', async () => {
+    process.on("SIGINT", async () => {
       await mongoose.connection.close();
-      console.log('MongoDB connection closed due to app termination');
+      console.log("MongoDB connection closed due to app termination");
       process.exit(0);
     });
-
   } catch (error) {
-    console.error('Database connection failed:', error);
+    console.error("Database connection failed:", error);
     process.exit(1);
   }
 };
