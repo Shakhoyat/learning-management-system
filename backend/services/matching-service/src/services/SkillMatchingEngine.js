@@ -1,7 +1,7 @@
-const tf = require('@tensorflow/tfjs-node');
-const { User, Skill, Session, Review } = require('../../shared/database');
-const logger = require('../../shared/logger');
-const Redis = require('redis');
+const tf = require("@tensorflow/tfjs-node");
+const { User, Skill, Session, Review } = require("../../shared/database");
+const logger = require("../../shared/logger");
+const Redis = require("redis");
 
 /**
  * AI-Powered Skill Matching Engine
@@ -15,7 +15,7 @@ class SkillMatchingEngine {
       contentBased: 0.4,
       collaborative: 0.3,
       availability: 0.15,
-      realTime: 0.15
+      realTime: 0.15,
     };
   }
 
@@ -25,10 +25,12 @@ class SkillMatchingEngine {
   async initialize() {
     try {
       // Load pre-trained TensorFlow model for matching
-      this.model = await tf.loadLayersModel('file://./models/matching-model.json');
-      logger.info('AI Matching model loaded successfully');
+      this.model = await tf.loadLayersModel(
+        "file://./models/matching-model.json"
+      );
+      logger.info("AI Matching model loaded successfully");
     } catch (error) {
-      logger.warn('ML model not found, using traditional algorithms');
+      logger.warn("ML model not found, using traditional algorithms");
       this.model = null;
     }
   }
@@ -43,23 +45,26 @@ class SkillMatchingEngine {
   async findBestMatch(userId, requiredSkillId, preferences = {}) {
     try {
       const startTime = Date.now();
-      
+
       // Get user and skill data
       const [user, skill] = await Promise.all([
-        User.findById(userId).populate('skills.learning skills.teaching'),
-        Skill.findById(requiredSkillId)
+        User.findById(userId).populate("skills.learning skills.teaching"),
+        Skill.findById(requiredSkillId),
       ]);
 
       if (!user || !skill) {
-        throw new Error('User or skill not found');
+        throw new Error("User or skill not found");
       }
 
       // 1. Build learner profile for content-based filtering
       const learnerProfile = await this.buildLearnerProfile(user);
-      
+
       // 2. Find potential teachers for this skill
-      const potentialTeachers = await this.findPotentialTeachers(requiredSkillId, preferences);
-      
+      const potentialTeachers = await this.findPotentialTeachers(
+        requiredSkillId,
+        preferences
+      );
+
       if (potentialTeachers.length === 0) {
         return [];
       }
@@ -69,12 +74,12 @@ class SkillMatchingEngine {
         contentScores,
         collaborativeScores,
         availabilityScores,
-        realTimeScores
+        realTimeScores,
       ] = await Promise.all([
         this.contentBasedFiltering(learnerProfile, potentialTeachers, skill),
         this.collaborativeFiltering(user, potentialTeachers, skill),
         this.availabilityMatching(potentialTeachers, preferences),
-        this.realTimeFactors(potentialTeachers)
+        this.realTimeFactors(potentialTeachers),
       ]);
 
       // 4. Combine scores using weighted algorithm
@@ -86,23 +91,29 @@ class SkillMatchingEngine {
       );
 
       // 5. Apply ML model if available
-      const mlEnhancedScores = this.model ? 
-        await this.applyMLModel(learnerProfile, potentialTeachers, finalScores) :
-        finalScores;
+      const mlEnhancedScores = this.model
+        ? await this.applyMLModel(
+            learnerProfile,
+            potentialTeachers,
+            finalScores
+          )
+        : finalScores;
 
       // 6. Rank and return results
-      const rankedTeachers = this.rankTeachers(potentialTeachers, mlEnhancedScores);
-      
+      const rankedTeachers = this.rankTeachers(
+        potentialTeachers,
+        mlEnhancedScores
+      );
+
       // Cache results for performance
       await this.cacheResults(userId, requiredSkillId, rankedTeachers);
-      
+
       const duration = Date.now() - startTime;
       logger.info(`Matching completed in ${duration}ms for user ${userId}`);
-      
-      return rankedTeachers;
 
+      return rankedTeachers;
     } catch (error) {
-      logger.error('Error in findBestMatch:', error);
+      logger.error("Error in findBestMatch:", error);
       throw error;
     }
   }
@@ -118,37 +129,38 @@ class SkillMatchingEngine {
       experienceLevel: 0,
       previousSessions: [],
       preferences: {},
-      skillVector: []
+      skillVector: [],
     };
 
     // Extract learning skills and preferences
     if (user.skills.learning) {
-      profile.skillInterests = user.skills.learning.map(skill => ({
+      profile.skillInterests = user.skills.learning.map((skill) => ({
         skillId: skill.skillId,
         currentLevel: skill.currentLevel,
         targetLevel: skill.targetLevel,
         hoursLearned: skill.hoursLearned,
-        preferredLearningStyle: skill.preferredLearningStyle
+        preferredLearningStyle: skill.preferredLearningStyle,
       }));
 
       // Determine primary learning style
       const styles = user.skills.learning
-        .map(s => s.preferredLearningStyle)
+        .map((s) => s.preferredLearningStyle)
         .filter(Boolean);
-      profile.learningStyle = this.getMostFrequent(styles) || 'visual';
+      profile.learningStyle = this.getMostFrequent(styles) || "visual";
     }
 
     // Calculate average experience level
     if (user.skills.teaching && user.skills.teaching.length > 0) {
-      profile.experienceLevel = user.skills.teaching.reduce((sum, skill) => 
-        sum + skill.level, 0) / user.skills.teaching.length;
+      profile.experienceLevel =
+        user.skills.teaching.reduce((sum, skill) => sum + skill.level, 0) /
+        user.skills.teaching.length;
     }
 
     // Get session history for collaborative filtering
     profile.previousSessions = await Session.find({
-      'participants.learner': user._id,
-      status: 'completed'
-    }).populate('skill participants.teacher');
+      "participants.learner": user._id,
+      status: "completed",
+    }).populate("skill participants.teacher");
 
     // Build skill vector for similarity calculations
     profile.skillVector = await this.buildSkillVector(user);
@@ -165,14 +177,16 @@ class SkillMatchingEngine {
     for (const teacher of teachers) {
       let score = 0;
       const teacherSkill = teacher.skills.teaching.find(
-        s => s.skillId.toString() === targetSkill._id.toString()
+        (s) => s.skillId.toString() === targetSkill._id.toString()
       );
 
       if (!teacherSkill) continue;
 
       // 1. Skill level compatibility (40% weight)
       const levelMatch = this.calculateLevelCompatibility(
-        learnerProfile.skillInterests.find(s => s.skillId.toString() === targetSkill._id.toString()),
+        learnerProfile.skillInterests.find(
+          (s) => s.skillId.toString() === targetSkill._id.toString()
+        ),
         teacherSkill
       );
       score += levelMatch * 0.4;
@@ -187,7 +201,9 @@ class SkillMatchingEngine {
 
       // 4. Skill relationship compatibility (15% weight)
       const relationshipScore = await this.calculateSkillRelationshipScore(
-        learnerProfile, teacher, targetSkill
+        learnerProfile,
+        teacher,
+        targetSkill
       );
       score += relationshipScore * 0.15;
 
@@ -205,10 +221,10 @@ class SkillMatchingEngine {
 
     // Find users similar to the learner
     const similarUsers = await this.findSimilarLearners(learner, 20);
-    
+
     if (similarUsers.length === 0) {
       // Return neutral scores if no similar users found
-      teachers.forEach(teacher => {
+      teachers.forEach((teacher) => {
         scores[teacher._id] = 0.5;
       });
       return scores;
@@ -216,15 +232,16 @@ class SkillMatchingEngine {
 
     // Get sessions of similar users for this skill
     const similarUserSessions = await Session.find({
-      'participants.learner': { $in: similarUsers.map(u => u._id) },
+      "participants.learner": { $in: similarUsers.map((u) => u._id) },
       skill: targetSkill._id,
-      status: 'completed'
-    }).populate('participants.teacher feedback');
+      status: "completed",
+    }).populate("participants.teacher feedback");
 
     for (const teacher of teachers) {
       // Find sessions where similar users learned from this teacher
       const teacherSessions = similarUserSessions.filter(
-        session => session.participants.teacher._id.toString() === teacher._id.toString()
+        (session) =>
+          session.participants.teacher._id.toString() === teacher._id.toString()
       );
 
       if (teacherSessions.length === 0) {
@@ -234,20 +251,22 @@ class SkillMatchingEngine {
 
       // Calculate average satisfaction from similar users
       const ratings = teacherSessions
-        .map(session => session.feedback?.fromLearner?.rating)
-        .filter(rating => rating !== undefined);
+        .map((session) => session.feedback?.fromLearner?.rating)
+        .filter((rating) => rating !== undefined);
 
       if (ratings.length === 0) {
         scores[teacher._id] = 0.4;
         continue;
       }
 
-      const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+      const avgRating =
+        ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
       const normalizedScore = (avgRating - 1) / 4; // Normalize 1-5 to 0-1
 
       // Apply confidence factor based on number of reviews
       const confidence = Math.min(ratings.length / 5, 1);
-      scores[teacher._id] = normalizedScore * confidence + 0.3 * (1 - confidence);
+      scores[teacher._id] =
+        normalizedScore * confidence + 0.3 * (1 - confidence);
     }
 
     return scores;
@@ -268,15 +287,21 @@ class SkillMatchingEngine {
         if (!teachingSkill.availability) continue;
 
         // 1. Hours per week availability (40% weight)
-        const hoursScore = Math.min(teachingSkill.availability.hoursPerWeek / 20, 1);
+        const hoursScore = Math.min(
+          teachingSkill.availability.hoursPerWeek / 20,
+          1
+        );
         score += hoursScore * 0.4;
 
         // 2. Time slot compatibility (60% weight)
-        if (preferences.preferredTimeSlots && teachingSkill.availability.preferredTimeSlots) {
+        if (
+          preferences.preferredTimeSlots &&
+          teachingSkill.availability.preferredTimeSlots
+        ) {
           const timeSlotMatch = this.calculateTimeSlotCompatibility(
             preferences.preferredTimeSlots,
             teachingSkill.availability.preferredTimeSlots,
-            preferences.timezone || 'UTC',
+            preferences.timezone || "UTC",
             teacher.personal.timezone
           );
           score += timeSlotMatch * 0.6;
@@ -286,8 +311,10 @@ class SkillMatchingEngine {
       }
 
       // Average across all teaching skills
-      score = teacher.skills.teaching.length > 0 ? 
-        score / teacher.skills.teaching.length : 0;
+      score =
+        teacher.skills.teaching.length > 0
+          ? score / teacher.skills.teaching.length
+          : 0;
 
       scores[teacher._id] = Math.min(score, 1);
     }
@@ -306,7 +333,8 @@ class SkillMatchingEngine {
       let score = 0.5; // Base score
 
       // 1. Recent activity boost (25% weight)
-      const daysSinceLastActive = (currentTime - teacher.lastActiveAt) / (1000 * 60 * 60 * 24);
+      const daysSinceLastActive =
+        (currentTime - teacher.lastActiveAt) / (1000 * 60 * 60 * 24);
       const activityScore = Math.max(0, 1 - daysSinceLastActive / 7); // Decay over a week
       score += activityScore * 0.25;
 
@@ -341,19 +369,23 @@ class SkillMatchingEngine {
 
       for (const teacher of teachers) {
         // Extract features for ML model
-        const features = this.extractMLFeatures(learnerProfile, teacher, currentScores[teacher._id]);
-        
+        const features = this.extractMLFeatures(
+          learnerProfile,
+          teacher,
+          currentScores[teacher._id]
+        );
+
         // Create tensor and predict
         const featureTensor = tf.tensor2d([features]);
         const prediction = this.model.predict(featureTensor);
         const predictionData = await prediction.data();
-        
+
         // Combine ML prediction with existing score
         const mlScore = predictionData[0];
         const combinedScore = currentScores[teacher._id] * 0.7 + mlScore * 0.3;
-        
+
         enhancedScores[teacher._id] = Math.min(combinedScore, 1);
-        
+
         // Clean up tensors
         featureTensor.dispose();
         prediction.dispose();
@@ -361,7 +393,7 @@ class SkillMatchingEngine {
 
       return enhancedScores;
     } catch (error) {
-      logger.error('Error applying ML model:', error);
+      logger.error("Error applying ML model:", error);
       return currentScores;
     }
   }
@@ -369,13 +401,18 @@ class SkillMatchingEngine {
   /**
    * Combine all scoring algorithms using weighted approach
    */
-  combineScores(contentScores, collaborativeScores, availabilityScores, realTimeScores) {
+  combineScores(
+    contentScores,
+    collaborativeScores,
+    availabilityScores,
+    realTimeScores
+  ) {
     const combinedScores = {};
     const allTeacherIds = new Set([
       ...Object.keys(contentScores),
       ...Object.keys(collaborativeScores),
       ...Object.keys(availabilityScores),
-      ...Object.keys(realTimeScores)
+      ...Object.keys(realTimeScores),
     ]);
 
     for (const teacherId of allTeacherIds) {
@@ -384,7 +421,7 @@ class SkillMatchingEngine {
       const availability = availabilityScores[teacherId] || 0;
       const realTime = realTimeScores[teacherId] || 0;
 
-      combinedScores[teacherId] = 
+      combinedScores[teacherId] =
         content * this.weights.contentBased +
         collaborative * this.weights.collaborative +
         availability * this.weights.availability +
@@ -399,16 +436,17 @@ class SkillMatchingEngine {
    */
   rankTeachers(teachers, scores) {
     return teachers
-      .map(teacher => ({
+      .map((teacher) => ({
         teacher: teacher,
         score: scores[teacher._id] || 0,
         breakdown: {
           overallCompatibility: Math.round(scores[teacher._id] * 100),
           experience: teacher.skills.teaching[0]?.hoursTaught || 0,
           rating: teacher.skills.teaching[0]?.rating || 0,
-          responseTime: '< 2 hours', // This would be calculated
-          availability: teacher.skills.teaching[0]?.availability?.hoursPerWeek || 0
-        }
+          responseTime: "< 2 hours", // This would be calculated
+          availability:
+            teacher.skills.teaching[0]?.availability?.hoursPerWeek || 0,
+        },
       }))
       .sort((a, b) => b.score - a.score)
       .slice(0, 20); // Return top 20 matches
@@ -419,29 +457,31 @@ class SkillMatchingEngine {
    */
   async findPotentialTeachers(skillId, preferences = {}) {
     const query = {
-      'skills.teaching.skillId': skillId,
-      status: 'active'
+      "skills.teaching.skillId": skillId,
+      status: "active",
     };
 
     // Apply filters if preferences are specified
     if (preferences.minRating) {
-      query['skills.teaching.rating'] = { $gte: preferences.minRating };
+      query["skills.teaching.rating"] = { $gte: preferences.minRating };
     }
 
     if (preferences.maxPrice) {
-      query['skills.teaching.pricing.hourlyRate'] = { $lte: preferences.maxPrice };
+      query["skills.teaching.pricing.hourlyRate"] = {
+        $lte: preferences.maxPrice,
+      };
     }
 
     if (preferences.languages && preferences.languages.length > 0) {
-      query['personal.languages'] = { $in: preferences.languages };
+      query["personal.languages"] = { $in: preferences.languages };
     }
 
     if (preferences.location && preferences.location.country) {
-      query['personal.location.country'] = preferences.location.country;
+      query["personal.location.country"] = preferences.location.country;
     }
 
     return await User.find(query)
-      .populate('skills.teaching.skillId')
+      .populate("skills.teaching.skillId")
       .limit(100); // Limit for performance
   }
 
@@ -451,19 +491,23 @@ class SkillMatchingEngine {
   async buildSkillVector(user) {
     // This would create a vector representation of user's skills
     // for similarity calculations
-    const allSkills = await Skill.find({}).select('_id');
+    const allSkills = await Skill.find({}).select("_id");
     const vector = new Array(allSkills.length).fill(0);
 
     // Fill vector based on user's skills
-    user.skills.teaching.forEach(skill => {
-      const index = allSkills.findIndex(s => s._id.toString() === skill.skillId.toString());
+    user.skills.teaching.forEach((skill) => {
+      const index = allSkills.findIndex(
+        (s) => s._id.toString() === skill.skillId.toString()
+      );
       if (index !== -1) {
         vector[index] = skill.level / 10; // Normalize to 0-1
       }
     });
 
-    user.skills.learning.forEach(skill => {
-      const index = allSkills.findIndex(s => s._id.toString() === skill.skillId.toString());
+    user.skills.learning.forEach((skill) => {
+      const index = allSkills.findIndex(
+        (s) => s._id.toString() === skill.skillId.toString()
+      );
       if (index !== -1) {
         vector[index] = Math.max(vector[index], skill.currentLevel / 10);
       }
@@ -479,14 +523,14 @@ class SkillMatchingEngine {
     // Implement cosine similarity to find similar users
     // This is a simplified version - in production, you'd use more sophisticated algorithms
     const userVector = await this.buildSkillVector(user);
-    
+
     const similarUsers = await User.find({
       _id: { $ne: user._id },
-      'skills.learning': { $exists: true, $ne: [] }
+      "skills.learning": { $exists: true, $ne: [] },
     }).limit(50);
 
     const similarities = [];
-    
+
     for (const otherUser of similarUsers) {
       const otherVector = await this.buildSkillVector(otherUser);
       const similarity = this.cosineSimilarity(userVector, otherVector);
@@ -496,7 +540,7 @@ class SkillMatchingEngine {
     return similarities
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, limit)
-      .map(item => item.user);
+      .map((item) => item.user);
   }
 
   /**
@@ -506,7 +550,7 @@ class SkillMatchingEngine {
     const dotProduct = vectorA.reduce((sum, a, i) => sum + a * vectorB[i], 0);
     const magnitudeA = Math.sqrt(vectorA.reduce((sum, a) => sum + a * a, 0));
     const magnitudeB = Math.sqrt(vectorB.reduce((sum, b) => sum + b * b, 0));
-    
+
     if (magnitudeA === 0 || magnitudeB === 0) return 0;
     return dotProduct / (magnitudeA * magnitudeB);
   }
@@ -518,7 +562,7 @@ class SkillMatchingEngine {
     if (!learnerSkill) return 0.5; // Neutral if learner hasn't specified this skill
 
     const levelGap = teacherSkill.level - learnerSkill.currentLevel;
-    
+
     // Optimal gap is 2-4 levels
     if (levelGap >= 2 && levelGap <= 4) return 1.0;
     if (levelGap >= 1 && levelGap <= 5) return 0.8;
@@ -529,16 +573,22 @@ class SkillMatchingEngine {
   /**
    * Calculate time slot compatibility between learner and teacher
    */
-  calculateTimeSlotCompatibility(learnerSlots, teacherSlots, learnerTz, teacherTz) {
+  calculateTimeSlotCompatibility(
+    learnerSlots,
+    teacherSlots,
+    learnerTz,
+    teacherTz
+  ) {
     // This would implement timezone conversion and overlap calculation
     // Simplified version for now
-    const overlap = learnerSlots.filter(learnerSlot =>
-      teacherSlots.some(teacherSlot => 
-        learnerSlot.day === teacherSlot.day &&
-        this.timeOverlap(learnerSlot, teacherSlot)
+    const overlap = learnerSlots.filter((learnerSlot) =>
+      teacherSlots.some(
+        (teacherSlot) =>
+          learnerSlot.day === teacherSlot.day &&
+          this.timeOverlap(learnerSlot, teacherSlot)
       )
     );
-    
+
     return Math.min(overlap.length / learnerSlots.length, 1);
   }
 
@@ -550,7 +600,7 @@ class SkillMatchingEngine {
     const end1 = this.timeToMinutes(slot1.endTime);
     const start2 = this.timeToMinutes(slot2.startTime);
     const end2 = this.timeToMinutes(slot2.endTime);
-    
+
     return start1 < end2 && start2 < end1;
   }
 
@@ -558,7 +608,7 @@ class SkillMatchingEngine {
    * Convert time string to minutes for comparison
    */
   timeToMinutes(timeStr) {
-    const [hours, minutes] = timeStr.split(':').map(Number);
+    const [hours, minutes] = timeStr.split(":").map(Number);
     return hours * 60 + minutes;
   }
 
@@ -569,15 +619,15 @@ class SkillMatchingEngine {
     const frequency = {};
     let maxCount = 0;
     let mostFrequent = null;
-    
-    arr.forEach(item => {
+
+    arr.forEach((item) => {
       frequency[item] = (frequency[item] || 0) + 1;
       if (frequency[item] > maxCount) {
         maxCount = frequency[item];
         mostFrequent = item;
       }
     });
-    
+
     return mostFrequent;
   }
 
@@ -600,7 +650,7 @@ class SkillMatchingEngine {
       teacher.skills.teaching[0]?.rating / 5 || 0,
       currentScore,
       teacher.personal.languages.length,
-      learnerProfile.skillInterests.length
+      learnerProfile.skillInterests.length,
     ];
   }
 

@@ -1,8 +1,8 @@
-const express = require('express');
-const MatchingController = require('../controllers/MatchingController');
-const { authenticate, authorize } = require('../../../shared/middleware/auth');
-const { validateRequest } = require('../../../shared/middleware/validation');
-const rateLimit = require('express-rate-limit');
+const express = require("express");
+const MatchingController = require("../controllers/MatchingController");
+const { authenticate, authorize } = require("../../../shared/middleware/auth");
+const { validateRequest } = require("../../../shared/middleware/validation");
+const rateLimit = require("express-rate-limit");
 
 const router = express.Router();
 const matchingController = new MatchingController();
@@ -13,104 +13,104 @@ const matchingRateLimit = rateLimit({
   max: 50, // limit each IP to 50 requests per windowMs
   message: {
     success: false,
-    message: 'Too many matching requests, please try again later'
-  }
+    message: "Too many matching requests, please try again later",
+  },
 });
 
 // Validation schemas
 const findTeachersSchema = {
   body: {
-    type: 'object',
-    required: ['skillId'],
+    type: "object",
+    required: ["skillId"],
     properties: {
-      skillId: { type: 'string', minLength: 24, maxLength: 24 },
+      skillId: { type: "string", minLength: 24, maxLength: 24 },
       preferences: {
-        type: 'object',
+        type: "object",
         properties: {
-          maxPrice: { type: 'number', minimum: 0 },
-          minRating: { type: 'number', minimum: 0, maximum: 5 },
-          languagePreferences: { 
-            type: 'array', 
-            items: { type: 'string' }
+          maxPrice: { type: "number", minimum: 0 },
+          minRating: { type: "number", minimum: 0, maximum: 5 },
+          languagePreferences: {
+            type: "array",
+            items: { type: "string" },
           },
-          timezonePreference: { type: 'string' },
-          experienceLevel: { 
-            type: 'string', 
-            enum: ['beginner', 'intermediate', 'advanced'] 
+          timezonePreference: { type: "string" },
+          experienceLevel: {
+            type: "string",
+            enum: ["beginner", "intermediate", "advanced"],
           },
-          sessionType: { 
-            type: 'string', 
-            enum: ['individual', 'group', 'both'] 
+          sessionType: {
+            type: "string",
+            enum: ["individual", "group", "both"],
           },
           availability: {
-            type: 'object',
+            type: "object",
             properties: {
-              daysOfWeek: { 
-                type: 'array', 
-                items: { type: 'string' }
+              daysOfWeek: {
+                type: "array",
+                items: { type: "string" },
               },
-              timeSlots: { 
-                type: 'array', 
-                items: { type: 'string' }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+              timeSlots: {
+                type: "array",
+                items: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };
 
 const compatibilityScoreSchema = {
   body: {
-    type: 'object',
-    required: ['teacherId', 'skillId'],
+    type: "object",
+    required: ["teacherId", "skillId"],
     properties: {
-      teacherId: { type: 'string', minLength: 24, maxLength: 24 },
-      skillId: { type: 'string', minLength: 24, maxLength: 24 }
-    }
-  }
+      teacherId: { type: "string", minLength: 24, maxLength: 24 },
+      skillId: { type: "string", minLength: 24, maxLength: 24 },
+    },
+  },
 };
 
 const batchMatchSchema = {
   body: {
-    type: 'object',
-    required: ['skillIds'],
+    type: "object",
+    required: ["skillIds"],
     properties: {
       skillIds: {
-        type: 'array',
+        type: "array",
         minItems: 1,
         maxItems: 10,
-        items: { type: 'string', minLength: 24, maxLength: 24 }
+        items: { type: "string", minLength: 24, maxLength: 24 },
       },
       preferences: {
-        type: 'object',
+        type: "object",
         properties: {
-          maxPrice: { type: 'number', minimum: 0 },
-          minRating: { type: 'number', minimum: 0, maximum: 5 }
-        }
-      }
-    }
-  }
+          maxPrice: { type: "number", minimum: 0 },
+          minRating: { type: "number", minimum: 0, maximum: 5 },
+        },
+      },
+    },
+  },
 };
 
 const algorithmWeightsSchema = {
   body: {
-    type: 'object',
-    required: ['weights'],
+    type: "object",
+    required: ["weights"],
     properties: {
       weights: {
-        type: 'object',
-        required: ['contentBased', 'collaborative', 'availability', 'realTime'],
+        type: "object",
+        required: ["contentBased", "collaborative", "availability", "realTime"],
         properties: {
-          contentBased: { type: 'number', minimum: 0, maximum: 1 },
-          collaborative: { type: 'number', minimum: 0, maximum: 1 },
-          availability: { type: 'number', minimum: 0, maximum: 1 },
-          realTime: { type: 'number', minimum: 0, maximum: 1 }
-        }
-      }
-    }
-  }
+          contentBased: { type: "number", minimum: 0, maximum: 1 },
+          collaborative: { type: "number", minimum: 0, maximum: 1 },
+          availability: { type: "number", minimum: 0, maximum: 1 },
+          realTime: { type: "number", minimum: 0, maximum: 1 },
+        },
+      },
+    },
+  },
 };
 
 /**
@@ -190,7 +190,8 @@ const algorithmWeightsSchema = {
  *       500:
  *         description: Internal server error
  */
-router.post('/find-teachers', 
+router.post(
+  "/find-teachers",
   matchingRateLimit,
   authenticate,
   validateRequest(findTeachersSchema),
@@ -225,7 +226,8 @@ router.post('/find-teachers',
  *       500:
  *         description: Internal server error
  */
-router.get('/skill-recommendations',
+router.get(
+  "/skill-recommendations",
   matchingRateLimit,
   authenticate,
   matchingController.getSkillRecommendations.bind(matchingController)
@@ -265,7 +267,8 @@ router.get('/skill-recommendations',
  *       500:
  *         description: Internal server error
  */
-router.post('/compatibility-score',
+router.post(
+  "/compatibility-score",
   matchingRateLimit,
   authenticate,
   validateRequest(compatibilityScoreSchema),
@@ -307,7 +310,8 @@ router.post('/compatibility-score',
  *       500:
  *         description: Internal server error
  */
-router.post('/batch-match',
+router.post(
+  "/batch-match",
   matchingRateLimit,
   authenticate,
   validateRequest(batchMatchSchema),
@@ -339,9 +343,10 @@ router.post('/batch-match',
  *       500:
  *         description: Internal server error
  */
-router.get('/analytics',
+router.get(
+  "/analytics",
   authenticate,
-  authorize(['admin', 'super_admin']),
+  authorize(["admin", "super_admin"]),
   matchingController.getMatchingAnalytics.bind(matchingController)
 );
 
@@ -398,52 +403,53 @@ router.get('/analytics',
  *       500:
  *         description: Internal server error
  */
-router.put('/algorithm-weights',
+router.put(
+  "/algorithm-weights",
   authenticate,
-  authorize(['admin', 'super_admin']),
+  authorize(["admin", "super_admin"]),
   validateRequest(algorithmWeightsSchema),
   matchingController.updateAlgorithmWeights.bind(matchingController)
 );
 
 // Health check endpoint
-router.get('/health', (req, res) => {
+router.get("/health", (req, res) => {
   res.json({
     success: true,
-    message: 'Matching service is healthy',
+    message: "Matching service is healthy",
     timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || '1.0.0'
+    version: process.env.npm_package_version || "1.0.0",
   });
 });
 
 // Service status endpoint
-router.get('/status', authenticate, async (req, res) => {
+router.get("/status", authenticate, async (req, res) => {
   try {
     const status = {
-      service: 'matching-service',
-      status: 'operational',
+      service: "matching-service",
+      status: "operational",
       timestamp: new Date().toISOString(),
       components: {
-        matchingEngine: 'operational',
-        database: 'operational',
-        cache: 'operational',
-        mlModel: 'loading' // This would check actual ML model status
+        matchingEngine: "operational",
+        database: "operational",
+        cache: "operational",
+        mlModel: "loading", // This would check actual ML model status
       },
       metrics: {
         uptime: process.uptime(),
         memoryUsage: process.memoryUsage(),
-        cpuUsage: process.cpuUsage()
-      }
+        cpuUsage: process.cpuUsage(),
+      },
     };
 
     res.json({
       success: true,
-      data: status
+      data: status,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error checking service status',
-      error: error.message
+      message: "Error checking service status",
+      error: error.message,
     });
   }
 });
