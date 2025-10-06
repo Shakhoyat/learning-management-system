@@ -1,0 +1,194 @@
+module.exports = {
+  apps: [
+    {
+      name: 'gateway',
+      script: './gateway/src/index.js',
+      cwd: './gateway',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3000,
+        AUTH_SERVICE_URL: 'http://localhost:3001',
+        USER_SERVICE_URL: 'http://localhost:3002',
+        SKILL_SERVICE_URL: 'http://localhost:3003',
+        MATCHING_SERVICE_URL: 'http://localhost:3004',
+        SESSION_SERVICE_URL: 'http://localhost:3005',
+        PAYMENT_SERVICE_URL: 'http://localhost:3006',
+        NOTIFICATION_SERVICE_URL: 'http://localhost:3007'
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3000
+      }
+    },
+    {
+      name: 'auth-service',
+      script: './services/auth-service/src/index.js',
+      cwd: './services/auth-service',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3001,
+        MONGODB_URI: 'mongodb://localhost:27017/lms_auth',
+        JWT_SECRET: 'your_jwt_secret_key_here',
+        JWT_EXPIRES_IN: '7d',
+        REDIS_URL: 'redis://localhost:6379',
+        BCRYPT_ROUNDS: 12
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3001
+      }
+    },
+    {
+      name: 'user-service',
+      script: './services/user-service/src/index.js',
+      cwd: './services/user-service',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3002,
+        MONGODB_URI: 'mongodb://localhost:27017/lms_users',
+        REDIS_URL: 'redis://localhost:6379',
+        AUTH_SERVICE_URL: 'http://localhost:3001'
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3002
+      }
+    },
+    {
+      name: 'skill-service',
+      script: './services/skill-service/src/index.js',
+      cwd: './services/skill-service',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3003,
+        MONGODB_URI: 'mongodb://localhost:27017/lms_skills',
+        REDIS_URL: 'redis://localhost:6379',
+        AUTH_SERVICE_URL: 'http://localhost:3001'
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3003
+      }
+    },
+    {
+      name: 'matching-service',
+      script: './services/matching-service/src/index.js',
+      cwd: './services/matching-service',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3004,
+        MONGODB_URI: 'mongodb://localhost:27017/lms_matching',
+        REDIS_URL: 'redis://localhost:6379',
+        AUTH_SERVICE_URL: 'http://localhost:3001',
+        USER_SERVICE_URL: 'http://localhost:3002',
+        SKILL_SERVICE_URL: 'http://localhost:3003'
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3004
+      }
+    },
+    {
+      name: 'session-service',
+      script: './services/session-service/src/index.js',
+      cwd: './services/session-service',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3005,
+        MONGODB_URI: 'mongodb://localhost:27017/lms_sessions',
+        REDIS_URL: 'redis://localhost:6379',
+        AUTH_SERVICE_URL: 'http://localhost:3001',
+        USER_SERVICE_URL: 'http://localhost:3002',
+        MATCHING_SERVICE_URL: 'http://localhost:3004'
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3005
+      }
+    },
+    {
+      name: 'payment-service',
+      script: './services/payment-service/src/index.js',
+      cwd: './services/payment-service',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3006,
+        MONGODB_URI: 'mongodb://localhost:27017/lms_payments',
+        REDIS_URL: 'redis://localhost:6379',
+        AUTH_SERVICE_URL: 'http://localhost:3001',
+        USER_SERVICE_URL: 'http://localhost:3002',
+        STRIPE_SECRET_KEY: 'sk_test_your_stripe_secret_key',
+        STRIPE_WEBHOOK_SECRET: 'whsec_your_webhook_secret'
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3006
+      }
+    },
+    {
+      name: 'notification-service',
+      script: './services/notification-service/src/index.js',
+      cwd: './services/notification-service',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3007,
+        MONGODB_URI: 'mongodb://localhost:27017/lms_notifications',
+        REDIS_URL: 'redis://localhost:6379',
+        AUTH_SERVICE_URL: 'http://localhost:3001',
+        SMTP_HOST: 'smtp.gmail.com',
+        SMTP_PORT: 587,
+        SMTP_USER: 'your_email@gmail.com',
+        SMTP_PASS: 'your_app_password',
+        SMTP_SECURE: false
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 3007
+      }
+    },
+    {
+      name: 'email-worker',
+      script: './workers/src/email-worker/index.js',
+      cwd: './workers',
+      env: {
+        NODE_ENV: 'development',
+        REDIS_URL: 'redis://localhost:6379',
+        SMTP_HOST: 'smtp.gmail.com',
+        SMTP_PORT: 587,
+        SMTP_USER: 'your_email@gmail.com',
+        SMTP_PASS: 'your_app_password',
+        SMTP_SECURE: false
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    },
+    {
+      name: 'payment-processor',
+      script: './workers/src/payment-processor/index.js',
+      cwd: './workers',
+      env: {
+        NODE_ENV: 'development',
+        REDIS_URL: 'redis://localhost:6379',
+        STRIPE_SECRET_KEY: 'sk_test_your_stripe_secret_key',
+        MONGODB_URI: 'mongodb://localhost:27017/lms_payments'
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    },
+    {
+      name: 'analytics-worker',
+      script: './workers/src/analytics-worker/index.js',
+      cwd: './workers',
+      env: {
+        NODE_ENV: 'development',
+        REDIS_URL: 'redis://localhost:6379',
+        MONGODB_URI: 'mongodb://localhost:27017/lms_analytics'
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    }
+  ]
+};
