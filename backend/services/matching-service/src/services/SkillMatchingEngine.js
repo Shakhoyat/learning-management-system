@@ -1,4 +1,4 @@
-const tf = require("@tensorflow/tfjs-node");
+const tf = require("@tensorflow/tfjs");
 const { User, Skill, Session, Review } = require("../../shared/database");
 const logger = require("../../shared/logger");
 const Redis = require("redis");
