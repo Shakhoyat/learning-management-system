@@ -305,6 +305,40 @@ const SessionSchema = new mongoose.Schema(
       ],
     },
 
+    // Session Activity Tracking
+    activity: {
+      joinedAt: Date,
+      actualStartTime: Date,
+      actualEndTime: Date,
+      rescheduling: [
+        {
+          rescheduledBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
+          rescheduledAt: {
+            type: Date,
+            default: Date.now,
+          },
+          reason: String,
+          oldSchedule: {
+            startTime: Date,
+            endTime: Date,
+          },
+        },
+      ],
+    },
+
+    // Cancellation Information
+    cancellation: {
+      cancelledBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      cancelledAt: Date,
+      reason: String,
+    },
+
     // Financial Transaction
     creditTransaction: {
       type: mongoose.Schema.Types.ObjectId,

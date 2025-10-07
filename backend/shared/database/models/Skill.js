@@ -53,28 +53,28 @@ const SkillSchema = new mongoose.Schema(
           ref: "Skill",
           required: true,
         },
-        relationship: {
+        relationshipType: {
           type: String,
           enum: [
+            "similar",
             "complementary",
             "advanced",
-            "alternative",
             "foundational",
             "specialized",
           ],
-          required: true,
+          default: "similar",
         },
         strength: {
           type: Number,
-          min: 0,
-          max: 1,
-          required: true, // 0-1 scale indicating strength of relationship
+          min: 1,
+          max: 10,
+          default: 5, // 1-10 scale indicating strength of relationship
         },
       },
     ],
 
     // Learning Metadata
-    difficultyLevel: {
+    difficulty: {
       type: Number,
       min: 1,
       max: 10,
@@ -133,7 +133,7 @@ const SkillSchema = new mongoose.Schema(
     },
 
     // Platform Statistics
-    statistics: {
+    stats: {
       totalTeachers: {
         type: Number,
         default: 0,
@@ -146,7 +146,7 @@ const SkillSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
-      averageTeacherRating: {
+      avgRating: {
         type: Number,
         default: 0,
         min: 0,
@@ -167,6 +167,30 @@ const SkillSchema = new mongoose.Schema(
     },
 
     // Content and Resources
+    metadata: {
+      estimatedLearningTime: {
+        type: String,
+        default: "Unknown",
+      },
+      industries: [String],
+      tools: [String],
+      learningResources: [
+        {
+          type: {
+            type: String,
+            enum: ["video", "article", "course", "book", "practice"],
+            required: true,
+          },
+          title: {
+            type: String,
+            required: true,
+          },
+          url: String,
+          description: String,
+        },
+      ],
+    },
+
     resources: [
       {
         type: {
@@ -277,10 +301,10 @@ SkillSchema.index({
   keywords: "text",
 });
 SkillSchema.index({ category: 1, subcategory: 1 });
-SkillSchema.index({ "statistics.popularityRank": 1 });
+SkillSchema.index({ "stats.popularityRank": 1 });
 SkillSchema.index({ "trendingScore.score": -1 });
 SkillSchema.index({ "industryDemand.score": -1 });
-SkillSchema.index({ difficultyLevel: 1 });
+SkillSchema.index({ difficulty: 1 });
 SkillSchema.index({ "verification.isVerified": 1 });
 SkillSchema.index({ status: 1 });
 SkillSchema.index({ tags: 1 });
@@ -371,7 +395,7 @@ SkillSchema.statics.findSimilarSkills = function (skillId, limit = 10) {
 
 SkillSchema.statics.getTrendingSkills = function (limit = 20) {
   return this.find({ status: "active" })
-    .sort({ "trendingScore.score": -1, "statistics.growthRate": -1 })
+    .sort({ "trendingScore.score": -1, "stats.growthRate": -1 })
     .limit(limit);
 };
 
@@ -380,7 +404,7 @@ SkillSchema.statics.getSkillsByDemand = function (category = null, limit = 20) {
   if (category) query.category = category;
 
   return this.find(query)
-    .sort({ "industryDemand.score": -1, "statistics.totalLearners": -1 })
+    .sort({ "industryDemand.score": -1, "stats.totalLearners": -1 })
     .limit(limit);
 };
 
