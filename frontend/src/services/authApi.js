@@ -16,11 +16,13 @@ export const authApi = apiSlice.injectEndpoints({
         method: "POST",
         body: userData,
       }),
+      transformErrorResponse: (response) => response.data,
     }),
     logout: builder.mutation({
-      query: () => ({
+      query: (refreshToken) => ({
         url: "/auth/logout",
         method: "POST",
+        body: refreshToken ? { refreshToken } : {},
       }),
       invalidatesTags: ["User"],
     }),

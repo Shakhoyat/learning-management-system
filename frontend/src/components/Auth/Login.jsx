@@ -51,13 +51,12 @@ const Login = () => {
 
             dispatch(loginSuccess({
                 user: result.user,
-                token: result.token
+                token: result.token,
+                refreshToken: result.refreshToken
             }));
 
-            // Store refresh token if remember me is checked
-            if (formData.rememberMe && result.refreshToken) {
-                localStorage.setItem('refreshToken', result.refreshToken);
-            }
+            // The refresh token is now stored in Redux state and localStorage
+            // through the loginSuccess action
 
         } catch (err) {
             const errorMessage = err.data?.error?.message || 'Login failed. Please try again.';
