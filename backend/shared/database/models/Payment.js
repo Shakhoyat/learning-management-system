@@ -38,16 +38,16 @@ const PaymentSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: [
-        "pending",           // Payment initiated but not confirmed
+        "pending", // Payment initiated but not confirmed
         "requires_payment_method", // Payment method needed
-        "requires_confirmation",   // Payment method added, needs confirmation
-        "requires_action",         // Additional action needed (3D Secure, etc.)
-        "processing",       // Payment is being processed
-        "succeeded",        // Payment completed successfully
-        "canceled",         // Payment was canceled
-        "failed",          // Payment failed
-        "disputed",        // Payment disputed/chargeback
-        "refunded",        // Payment refunded (full or partial)
+        "requires_confirmation", // Payment method added, needs confirmation
+        "requires_action", // Additional action needed (3D Secure, etc.)
+        "processing", // Payment is being processed
+        "succeeded", // Payment completed successfully
+        "canceled", // Payment was canceled
+        "failed", // Payment failed
+        "disputed", // Payment disputed/chargeback
+        "refunded", // Payment refunded (full or partial)
       ],
       default: "pending",
     },
@@ -267,7 +267,7 @@ PaymentSchema.index({ createdAt: -1 });
 // Virtual for total refunded amount
 PaymentSchema.virtual("totalRefunded").get(function () {
   return this.refunds
-    .filter(refund => refund.status === "succeeded")
+    .filter((refund) => refund.status === "succeeded")
     .reduce((total, refund) => total + refund.amount, 0);
 });
 
@@ -282,12 +282,12 @@ PaymentSchema.methods.addRefund = function (refundData) {
     ...refundData,
     refundId: `re_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
   });
-  
+
   // Update status if fully refunded
   if (this.totalRefunded >= this.amount) {
     this.status = "refunded";
   }
-  
+
   this.addAuditEntry("refunded", refundData.processedBy, {
     amount: refundData.amount,
     reason: refundData.reason,
@@ -297,11 +297,15 @@ PaymentSchema.methods.addRefund = function (refundData) {
 PaymentSchema.methods.addDispute = function (disputeData) {
   this.disputes.push(disputeData);
   this.status = "disputed";
-  
+
   this.addAuditEntry("disputed", null, disputeData);
 };
 
-PaymentSchema.methods.addAuditEntry = function (action, performedBy, details = {}) {
+PaymentSchema.methods.addAuditEntry = function (
+  action,
+  performedBy,
+  details = {}
+) {
   this.auditLog.push({
     action,
     performedBy,
@@ -311,7 +315,11 @@ PaymentSchema.methods.addAuditEntry = function (action, performedBy, details = {
 };
 
 // Static methods
-PaymentSchema.statics.getRevenueByPeriod = function (startDate, endDate, teacherId = null) {
+PaymentSchema.statics.getRevenueByPeriod = function (
+  startDate,
+  endDate,
+  teacherId = null
+) {
   const matchQuery = {
     status: "succeeded",
     "timestamps.succeeded": {
@@ -319,11 +327,11 @@ PaymentSchema.statics.getRevenueByPeriod = function (startDate, endDate, teacher
       $lte: endDate,
     },
   };
-  
+
   if (teacherId) {
     matchQuery.teacherId = mongoose.Types.ObjectId(teacherId);
   }
-  
+
   return this.aggregate([
     { $match: matchQuery },
     {

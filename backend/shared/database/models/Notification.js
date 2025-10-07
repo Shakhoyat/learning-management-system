@@ -14,27 +14,27 @@ const NotificationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: [
-        "session_reminder",         // Upcoming session notification
-        "session_started",          // Session has started
-        "session_ended",            // Session has ended
-        "session_cancelled",        // Session was cancelled
-        "session_rescheduled",      // Session was rescheduled
-        "payment_success",          // Payment processed successfully
-        "payment_failed",           // Payment processing failed
-        "payment_refunded",         // Payment was refunded
-        "new_message",              // New message received
-        "skill_progress",           // Skill progress update
-        "achievement_unlocked",     // New achievement earned
-        "teacher_request",          // Request to become a teacher
-        "teacher_approved",         // Teacher application approved
-        "teacher_rejected",         // Teacher application rejected
-        "review_received",          // New review received
-        "system_announcement",      // System-wide announcements
-        "maintenance_notice",       // Scheduled maintenance
-        "security_alert",           // Security-related notifications
-        "marketing",                // Marketing communications
-        "welcome",                  // Welcome message for new users
-        "reminder",                 // General reminders
+        "session_reminder", // Upcoming session notification
+        "session_started", // Session has started
+        "session_ended", // Session has ended
+        "session_cancelled", // Session was cancelled
+        "session_rescheduled", // Session was rescheduled
+        "payment_success", // Payment processed successfully
+        "payment_failed", // Payment processing failed
+        "payment_refunded", // Payment was refunded
+        "new_message", // New message received
+        "skill_progress", // Skill progress update
+        "achievement_unlocked", // New achievement earned
+        "teacher_request", // Request to become a teacher
+        "teacher_approved", // Teacher application approved
+        "teacher_rejected", // Teacher application rejected
+        "review_received", // New review received
+        "system_announcement", // System-wide announcements
+        "maintenance_notice", // Scheduled maintenance
+        "security_alert", // Security-related notifications
+        "marketing", // Marketing communications
+        "welcome", // Welcome message for new users
+        "reminder", // General reminders
       ],
       required: true,
     },
@@ -244,7 +244,7 @@ const NotificationSchema = new mongoose.Schema(
     // Tracking and Analytics
     analytics: {
       deviceType: String, // mobile, desktop, tablet
-      platform: String,   // ios, android, web
+      platform: String, // ios, android, web
       location: {
         country: String,
         city: String,
@@ -278,7 +278,11 @@ NotificationSchema.index({ batchId: 1 });
 NotificationSchema.index({ priority: 1, createdAt: -1 });
 
 // Compound indexes for common queries
-NotificationSchema.index({ userId: 1, "delivery.inApp.read": 1, createdAt: -1 });
+NotificationSchema.index({
+  userId: 1,
+  "delivery.inApp.read": 1,
+  createdAt: -1,
+});
 NotificationSchema.index({ userId: 1, type: 1, createdAt: -1 });
 
 // TTL index for automatic cleanup of expired notifications
@@ -293,7 +297,7 @@ NotificationSchema.virtual("isRead").get(function () {
 NotificationSchema.virtual("isDelivered").get(function () {
   const channels = this.channels;
   let delivered = false;
-  
+
   if (channels.includes("in_app")) {
     delivered = delivered || this.delivery.inApp.delivered;
   }
@@ -306,7 +310,7 @@ NotificationSchema.virtual("isDelivered").get(function () {
   if (channels.includes("sms")) {
     delivered = delivered || this.delivery.sms.sent;
   }
-  
+
   return delivered;
 });
 
@@ -315,14 +319,14 @@ NotificationSchema.methods.markAsRead = function () {
   if (!this.delivery.inApp.read) {
     this.delivery.inApp.read = true;
     this.delivery.inApp.readAt = new Date();
-    
+
     if (this.status === "delivered") {
       this.status = "read";
     }
-    
+
     // Track time to read for analytics
     if (this.delivery.inApp.deliveredAt) {
-      this.analytics.engagement.timeToRead = 
+      this.analytics.engagement.timeToRead =
         (this.delivery.inApp.readAt - this.delivery.inApp.deliveredAt) / 1000;
     }
   }
@@ -331,7 +335,7 @@ NotificationSchema.methods.markAsRead = function () {
 
 NotificationSchema.methods.markAsDelivered = function (channel = "in_app") {
   const now = new Date();
-  
+
   switch (channel) {
     case "in_app":
       this.delivery.inApp.delivered = true;
@@ -350,22 +354,22 @@ NotificationSchema.methods.markAsDelivered = function (channel = "in_app") {
       this.delivery.sms.sentAt = now;
       break;
   }
-  
+
   if (this.status === "scheduled") {
     this.status = "delivered";
   }
-  
+
   return this.save();
 };
 
 NotificationSchema.methods.trackAction = function (actionTaken) {
   this.analytics.engagement.actionTaken = actionTaken;
-  
+
   if (this.delivery.inApp.deliveredAt) {
-    this.analytics.engagement.timeToAction = 
+    this.analytics.engagement.timeToAction =
       (new Date() - this.delivery.inApp.deliveredAt) / 1000;
   }
-  
+
   return this.save();
 };
 
@@ -394,7 +398,11 @@ NotificationSchema.statics.markAllAsRead = function (userId) {
   );
 };
 
-NotificationSchema.statics.getNotificationsByType = function (userId, type, limit = 10) {
+NotificationSchema.statics.getNotificationsByType = function (
+  userId,
+  type,
+  limit = 10
+) {
   return this.find({
     userId: mongoose.Types.ObjectId(userId),
     type: type,
@@ -431,7 +439,9 @@ NotificationSchema.statics.getEngagementStats = function (startDate, endDate) {
           $avg: "$analytics.engagement.timeToRead",
         },
         totalActions: {
-          $sum: { $cond: [{ $ne: ["$analytics.engagement.actionTaken", null] }, 1, 0] },
+          $sum: {
+            $cond: [{ $ne: ["$analytics.engagement.actionTaken", null] }, 1, 0],
+          },
         },
       },
     },

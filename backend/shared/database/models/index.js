@@ -1,11 +1,11 @@
 // Database Models Index
 // Centralized export of all database models
 
-const User = require('./User');
-const Skill = require('./Skill');
-const Session = require('./Session');
-const Payment = require('./Payment');
-const Notification = require('./Notification');
+const User = require("./User");
+const Skill = require("./Skill");
+const Session = require("./Session");
+const Payment = require("./Payment");
+const Notification = require("./Notification");
 
 // Export all models
 module.exports = {
