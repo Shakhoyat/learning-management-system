@@ -10,20 +10,24 @@ const sessionSchema = Joi.object({
   description: Joi.string().max(1000).optional(),
   objectives: Joi.array().items(Joi.string().trim()).optional(),
   schedule: Joi.object({
-    startTime: Joi.date().min('now').required(),
-    endTime: Joi.date().greater(Joi.ref('startTime')).required(),
-    timezone: Joi.string().default('UTC'),
+    startTime: Joi.date().min("now").required(),
+    endTime: Joi.date().greater(Joi.ref("startTime")).required(),
+    timezone: Joi.string().default("UTC"),
     duration: Joi.number().min(15).max(480).required(), // 15 minutes to 8 hours
     buffer: Joi.object({
       before: Joi.number().min(0).max(60).default(5),
       after: Joi.number().min(0).max(60).default(5),
     }).optional(),
   }).required(),
-  sessionType: Joi.string().valid('one-on-one', 'group', 'workshop').default('one-on-one'),
+  sessionType: Joi.string()
+    .valid("one-on-one", "group", "workshop")
+    .default("one-on-one"),
   pricing: Joi.object({
     amount: Joi.number().min(0).required(),
-    currency: Joi.string().length(3).default('USD'),
-    paymentMethod: Joi.string().valid('hourly', 'session', 'package').default('hourly'),
+    currency: Joi.string().length(3).default("USD"),
+    paymentMethod: Joi.string()
+      .valid("hourly", "session", "package")
+      .default("hourly"),
   }).optional(),
   requirements: Joi.object({
     materials: Joi.array().items(Joi.string()).optional(),
@@ -37,7 +41,7 @@ const sessionUpdateSchema = Joi.object({
   description: Joi.string().max(1000).optional(),
   objectives: Joi.array().items(Joi.string().trim()).optional(),
   schedule: Joi.object({
-    startTime: Joi.date().min('now').optional(),
+    startTime: Joi.date().min("now").optional(),
     endTime: Joi.date().optional(),
     timezone: Joi.string().optional(),
     duration: Joi.number().min(15).max(480).optional(),

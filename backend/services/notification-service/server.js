@@ -75,7 +75,9 @@ const startServer = async () => {
     app.listen(PORT, () => {
       logger.info(`🚀 Notification Service running on port ${PORT}`);
       logger.info(`📊 Health check: http://localhost:${PORT}/health`);
-      logger.info(`🔗 API Base URL: http://localhost:${PORT}/api/notifications`);
+      logger.info(
+        `🔗 API Base URL: http://localhost:${PORT}/api/notifications`
+      );
     });
   } catch (error) {
     logger.error("❌ Failed to start Notification Service:", error);

@@ -77,7 +77,9 @@ const createSkill = async (req, res) => {
   } catch (error) {
     logger.error("Error creating skill:", error);
     if (error.code === 11000) {
-      return res.status(400).json({ error: "Skill with this name already exists" });
+      return res
+        .status(400)
+        .json({ error: "Skill with this name already exists" });
     }
     res.status(500).json({ error: "Failed to create skill" });
   }
@@ -86,11 +88,10 @@ const createSkill = async (req, res) => {
 // Update skill
 const updateSkill = async (req, res) => {
   try {
-    const skill = await Skill.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const skill = await Skill.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!skill) {
       return res.status(404).json({ error: "Skill not found" });
@@ -225,8 +226,10 @@ const getSkillTree = async (req, res) => {
 // Get prerequisites for a skill
 const getPrerequisites = async (req, res) => {
   try {
-    const skill = await Skill.findById(req.params.id)
-      .populate("prerequisites.skillId", "name category difficulty");
+    const skill = await Skill.findById(req.params.id).populate(
+      "prerequisites.skillId",
+      "name category difficulty"
+    );
 
     if (!skill) {
       return res.status(404).json({ error: "Skill not found" });
@@ -255,8 +258,10 @@ const getSkillPath = async (req, res) => {
       if (visited.has(skillId.toString())) return;
       visited.add(skillId.toString());
 
-      const currentSkill = await Skill.findById(skillId)
-        .populate("prerequisites.skillId", "name category difficulty");
+      const currentSkill = await Skill.findById(skillId).populate(
+        "prerequisites.skillId",
+        "name category difficulty"
+      );
 
       if (currentSkill) {
         // Add prerequisites first
@@ -275,7 +280,8 @@ const getSkillPath = async (req, res) => {
             difficulty: currentSkill.difficulty,
           },
           level,
-          estimatedTime: currentSkill.metadata?.estimatedLearningTime || "Unknown",
+          estimatedTime:
+            currentSkill.metadata?.estimatedLearningTime || "Unknown",
         });
       }
     };
@@ -312,7 +318,7 @@ const getPopularSkills = async (req, res) => {
 const getSkillStatistics = async (req, res) => {
   try {
     const totalSkills = await Skill.countDocuments();
-    
+
     const categoryStats = await Skill.aggregate([
       {
         $group: {

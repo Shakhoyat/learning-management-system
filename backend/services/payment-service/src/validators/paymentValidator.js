@@ -11,12 +11,14 @@ const paymentSchema = Joi.object({
 
 const refundSchema = Joi.object({
   amount: Joi.number().positive().optional(), // If not provided, refund full amount
-  reason: Joi.string().valid(
-    "duplicate",
-    "fraudulent", 
-    "requested_by_customer",
-    "expired_uncaptured_charge"
-  ).default("requested_by_customer"),
+  reason: Joi.string()
+    .valid(
+      "duplicate",
+      "fraudulent",
+      "requested_by_customer",
+      "expired_uncaptured_charge"
+    )
+    .default("requested_by_customer"),
   metadata: Joi.object().optional(),
 });
 
@@ -38,7 +40,9 @@ const paymentMethodSchema = Joi.object({
     then: Joi.object({
       account_number: Joi.string().required(),
       routing_number: Joi.string().required(),
-      account_holder_type: Joi.string().valid("individual", "company").required(),
+      account_holder_type: Joi.string()
+        .valid("individual", "company")
+        .required(),
     }).required(),
     otherwise: Joi.forbidden(),
   }),

@@ -20,7 +20,10 @@ const {
 } = require("../controllers/sessionController");
 const { authenticate } = require("../middleware/auth");
 const { authorize } = require("../middleware/authorization");
-const { validateSession, validateSessionUpdate } = require("../validators/sessionValidator");
+const {
+  validateSession,
+  validateSessionUpdate,
+} = require("../validators/sessionValidator");
 
 const router = express.Router();
 

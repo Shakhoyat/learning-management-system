@@ -2,25 +2,29 @@ const Joi = require("joi");
 
 const notificationSchema = Joi.object({
   userId: Joi.string().hex().length(24).required(),
-  type: Joi.string().valid(
-    "session_reminder",
-    "session_started",
-    "session_ended",
-    "payment_success",
-    "payment_failed",
-    "new_message",
-    "achievement_unlocked",
-    "skill_progress",
-    "system_announcement",
-    "marketing"
-  ).required(),
+  type: Joi.string()
+    .valid(
+      "session_reminder",
+      "session_started",
+      "session_ended",
+      "payment_success",
+      "payment_failed",
+      "new_message",
+      "achievement_unlocked",
+      "skill_progress",
+      "system_announcement",
+      "marketing"
+    )
+    .required(),
   title: Joi.string().max(100).required(),
   message: Joi.string().max(500).required(),
   data: Joi.object().optional(),
-  priority: Joi.string().valid("low", "normal", "high", "urgent").default("normal"),
-  channels: Joi.array().items(
-    Joi.string().valid("email", "push", "in_app", "sms")
-  ).default(["in_app"]),
+  priority: Joi.string()
+    .valid("low", "normal", "high", "urgent")
+    .default("normal"),
+  channels: Joi.array()
+    .items(Joi.string().valid("email", "push", "in_app", "sms"))
+    .default(["in_app"]),
   scheduledFor: Joi.date().optional(),
 });
 
@@ -49,11 +53,17 @@ const settingsSchema = Joi.object({
     skillProgressUpdates: Joi.boolean().default(true),
     systemAnnouncements: Joi.boolean().default(true),
   }).optional(),
-  frequency: Joi.string().valid("immediate", "hourly", "daily", "weekly").default("immediate"),
+  frequency: Joi.string()
+    .valid("immediate", "hourly", "daily", "weekly")
+    .default("immediate"),
   quietHours: Joi.object({
     enabled: Joi.boolean().default(false),
-    start: Joi.string().pattern(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/).default("22:00"),
-    end: Joi.string().pattern(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/).default("08:00"),
+    start: Joi.string()
+      .pattern(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)
+      .default("22:00"),
+    end: Joi.string()
+      .pattern(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)
+      .default("08:00"),
     timezone: Joi.string().default("UTC"),
   }).optional(),
 });

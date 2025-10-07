@@ -47,17 +47,24 @@ const getUserNotifications = async (req, res) => {
     // Filter notifications
     let filteredNotifications = userNotifications;
     if (type) {
-      filteredNotifications = filteredNotifications.filter(n => n.type === type);
+      filteredNotifications = filteredNotifications.filter(
+        (n) => n.type === type
+      );
     }
     if (read !== undefined) {
       const isRead = read === "true";
-      filteredNotifications = filteredNotifications.filter(n => n.read === isRead);
+      filteredNotifications = filteredNotifications.filter(
+        (n) => n.read === isRead
+      );
     }
 
     // Pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + parseInt(limit);
-    const paginatedNotifications = filteredNotifications.slice(startIndex, endIndex);
+    const paginatedNotifications = filteredNotifications.slice(
+      startIndex,
+      endIndex
+    );
 
     res.json({
       notifications: paginatedNotifications,

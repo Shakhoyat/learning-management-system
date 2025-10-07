@@ -10,7 +10,9 @@ const createSession = async (req, res) => {
       room: {
         videoRoomId: uuidv4(),
         videoProvider: "default",
-        joinUrl: `${process.env.VIDEO_BASE_URL || "http://localhost:3005"}/room/${uuidv4()}`,
+        joinUrl: `${
+          process.env.VIDEO_BASE_URL || "http://localhost:3005"
+        }/room/${uuidv4()}`,
         password: Math.random().toString(36).substring(2, 15),
       },
       createdBy: req.user.id,
@@ -49,10 +51,10 @@ const getSessionById = async (req, res) => {
 
     // Check if user has access to this session
     const userId = req.user.id;
-    const isParticipant = 
+    const isParticipant =
       session.participants.teacher._id.toString() === userId ||
       session.participants.learner._id.toString() === userId;
-    
+
     const isAdmin = req.user.role === "admin";
 
     if (!isParticipant && !isAdmin) {
@@ -85,7 +87,7 @@ const getAllSessions = async (req, res) => {
     if (skill) query.skill = skill;
     if (teacher) query["participants.teacher"] = teacher;
     if (learner) query["participants.learner"] = learner;
-    
+
     if (startDate || endDate) {
       query["schedule.startTime"] = {};
       if (startDate) query["schedule.startTime"].$gte = new Date(startDate);
@@ -128,14 +130,14 @@ const getAllSessions = async (req, res) => {
 const updateSession = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
-    
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
 
     // Check if user can update this session
     const userId = req.user.id;
-    const canUpdate = 
+    const canUpdate =
       session.participants.teacher.toString() === userId ||
       session.participants.learner.toString() === userId ||
       req.user.role === "admin";
@@ -146,7 +148,9 @@ const updateSession = async (req, res) => {
 
     // Prevent certain fields from being updated based on session status
     if (session.status === "completed" || session.status === "cancelled") {
-      return res.status(400).json({ error: "Cannot update completed or cancelled session" });
+      return res
+        .status(400)
+        .json({ error: "Cannot update completed or cancelled session" });
     }
 
     const updatedSession = await Session.findByIdAndUpdate(
@@ -173,18 +177,20 @@ const updateSession = async (req, res) => {
 const deleteSession = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
-    
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
 
     // Only allow deletion if session is not started
     if (["started", "ongoing", "completed"].includes(session.status)) {
-      return res.status(400).json({ error: "Cannot delete active or completed session" });
+      return res
+        .status(400)
+        .json({ error: "Cannot delete active or completed session" });
     }
 
     await Session.findByIdAndDelete(req.params.id);
-    
+
     res.json({ message: "Session deleted successfully" });
   } catch (error) {
     logger.error("Error deleting session:", error);
@@ -196,18 +202,20 @@ const deleteSession = async (req, res) => {
 const joinSession = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
-    
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
 
     const userId = req.user.id;
-    const isParticipant = 
+    const isParticipant =
       session.participants.teacher.toString() === userId ||
       session.participants.learner.toString() === userId;
 
     if (!isParticipant) {
-      return res.status(403).json({ error: "You are not a participant in this session" });
+      return res
+        .status(403)
+        .json({ error: "You are not a participant in this session" });
     }
 
     // Update session status based on participants
@@ -218,7 +226,7 @@ const joinSession = async (req, res) => {
 
     const updatedSession = await Session.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         status: newStatus,
         "activity.joinedAt": new Date(),
       },
@@ -243,7 +251,7 @@ const joinSession = async (req, res) => {
 const leaveSession = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
-    
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
@@ -260,7 +268,7 @@ const startSession = async (req, res) => {
   try {
     const session = await Session.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         status: "ongoing",
         "activity.actualStartTime": new Date(),
       },
@@ -286,7 +294,7 @@ const endSession = async (req, res) => {
   try {
     const session = await Session.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         status: "completed",
         "activity.actualEndTime": new Date(),
       },
@@ -357,7 +365,7 @@ const resumeSession = async (req, res) => {
 const getUserSessions = async (req, res) => {
   try {
     const { status, page = 1, limit = 20 } = req.query;
-    
+
     const query = {
       $or: [
         { "participants.teacher": req.user.id },
@@ -395,7 +403,7 @@ const getUserSessions = async (req, res) => {
 const getUpcomingSessions = async (req, res) => {
   try {
     const { limit = 10 } = req.query;
-    
+
     const query = {
       $or: [
         { "participants.teacher": req.user.id },
@@ -423,7 +431,7 @@ const getUpcomingSessions = async (req, res) => {
 const getSessionHistory = async (req, res) => {
   try {
     const { page = 1, limit = 20 } = req.query;
-    
+
     const query = {
       $or: [
         { "participants.teacher": req.user.id },
@@ -460,13 +468,13 @@ const getSessionHistory = async (req, res) => {
 const cancelSession = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
-    
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
 
     const userId = req.user.id;
-    const canCancel = 
+    const canCancel =
       session.participants.teacher.toString() === userId ||
       session.participants.learner.toString() === userId ||
       req.user.role === "admin";
@@ -476,12 +484,14 @@ const cancelSession = async (req, res) => {
     }
 
     if (["completed", "cancelled"].includes(session.status)) {
-      return res.status(400).json({ error: "Session is already completed or cancelled" });
+      return res
+        .status(400)
+        .json({ error: "Session is already completed or cancelled" });
     }
 
     const updatedSession = await Session.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         status: "cancelled",
         cancellation: {
           cancelledBy: req.user.id,
@@ -506,13 +516,13 @@ const cancelSession = async (req, res) => {
 const rescheduleSession = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
-    
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
 
     const userId = req.user.id;
-    const canReschedule = 
+    const canReschedule =
       session.participants.teacher.toString() === userId ||
       session.participants.learner.toString() === userId ||
       req.user.role === "admin";
@@ -526,10 +536,10 @@ const rescheduleSession = async (req, res) => {
     }
 
     const { startTime, endTime, reason } = req.body;
-    
+
     const updatedSession = await Session.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         "schedule.startTime": startTime,
         "schedule.endTime": endTime,
         status: "scheduled",
@@ -575,7 +585,7 @@ const getSessionStatistics = async (req, res) => {
     }
 
     const totalSessions = await Session.countDocuments(query);
-    
+
     const statusStats = await Session.aggregate([
       { $match: query },
       {

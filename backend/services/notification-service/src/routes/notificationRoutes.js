@@ -15,7 +15,10 @@ const {
 } = require("../controllers/notificationController");
 const { authenticate } = require("../middleware/auth");
 const { authorize } = require("../middleware/authorization");
-const { validateNotification, validateSettings } = require("../validators/notificationValidator");
+const {
+  validateNotification,
+  validateSettings,
+} = require("../validators/notificationValidator");
 
 const router = express.Router();
 
@@ -42,6 +45,11 @@ router.post("/subscribe", subscribeToNotifications);
 router.post("/unsubscribe", unsubscribeFromNotifications);
 
 // Send notification (admin/system only)
-router.post("/send", authorize(["admin", "system"]), validateNotification, sendNotification);
+router.post(
+  "/send",
+  authorize(["admin", "system"]),
+  validateNotification,
+  sendNotification
+);
 
 module.exports = router;

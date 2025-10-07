@@ -16,7 +16,10 @@ const {
 } = require("../controllers/paymentController");
 const { authenticate } = require("../middleware/auth");
 const { authorize } = require("../middleware/authorization");
-const { validatePayment, validateRefund } = require("../validators/paymentValidator");
+const {
+  validatePayment,
+  validateRefund,
+} = require("../validators/paymentValidator");
 
 const router = express.Router();
 
@@ -32,7 +35,12 @@ router.post("/:id/confirm", confirmPayment);
 router.get("/:id", getPaymentById);
 router.get("/", getUserPayments);
 router.get("/history", getPaymentHistory);
-router.post("/:id/refund", authorize(["admin", "teacher"]), validateRefund, processRefund);
+router.post(
+  "/:id/refund",
+  authorize(["admin", "teacher"]),
+  validateRefund,
+  processRefund
+);
 
 // Payment methods
 router.get("/methods", getPaymentMethods);

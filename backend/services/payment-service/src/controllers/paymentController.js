@@ -14,7 +14,9 @@ const createPaymentIntent = async (req, res) => {
       amount: amount * 100, // Convert to cents
       currency: currency.toLowerCase(),
       status: "requires_payment_method",
-      client_secret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
+      client_secret: `pi_${Date.now()}_secret_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`,
       created: new Date(),
       description,
       sessionId,
@@ -106,8 +108,8 @@ const getUserPayments = async (req, res) => {
       },
     ];
 
-    const filteredPayments = status 
-      ? payments.filter(p => p.status === status)
+    const filteredPayments = status
+      ? payments.filter((p) => p.status === status)
       : payments;
 
     res.json({

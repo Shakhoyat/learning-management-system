@@ -15,7 +15,10 @@ const {
 } = require("../controllers/skillController");
 const { authenticate } = require("../middleware/auth");
 const { authorize } = require("../middleware/authorization");
-const { validateSkill, validateSkillUpdate } = require("../validators/skillValidator");
+const {
+  validateSkill,
+  validateSkillUpdate,
+} = require("../validators/skillValidator");
 
 const router = express.Router();
 
@@ -31,8 +34,20 @@ router.get("/:id/prerequisites", getPrerequisites);
 router.get("/:id/path", getSkillPath);
 
 // Protected routes
-router.post("/", authenticate, authorize(["admin", "teacher"]), validateSkill, createSkill);
-router.put("/:id", authenticate, authorize(["admin", "teacher"]), validateSkillUpdate, updateSkill);
+router.post(
+  "/",
+  authenticate,
+  authorize(["admin", "teacher"]),
+  validateSkill,
+  createSkill
+);
+router.put(
+  "/:id",
+  authenticate,
+  authorize(["admin", "teacher"]),
+  validateSkillUpdate,
+  updateSkill
+);
 router.delete("/:id", authenticate, authorize(["admin"]), deleteSkill);
 
 module.exports = router;
