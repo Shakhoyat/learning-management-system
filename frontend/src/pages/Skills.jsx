@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { skillService } from '../services/skills';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import Header from '../components/common/Header';
 import SkillCard from '../components/skills/SkillCard';
 import SkillCategories from '../components/skills/SkillCategories';
 
@@ -53,14 +54,18 @@ const Skills = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           {/* Header */}
@@ -72,6 +77,15 @@ const Skills = () => {
               Discover new skills to learn or find skills you can teach
             </p>
           </div>
+
+          {/* Categories */}
+          {categories.length > 0 && (
+            <SkillCategories
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+          )}
 
           {/* Search and Filters */}
           <div className="bg-white rounded-lg shadow p-6 mb-8">

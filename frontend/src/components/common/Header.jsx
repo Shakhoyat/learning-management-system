@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
     AcademicCapIcon,
@@ -11,6 +11,7 @@ import {
 
 const Header = () => {
     const { user, logout } = useAuth();
+    const location = useLocation();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -21,9 +22,9 @@ const Header = () => {
 
     const navigation = [
         { name: 'Dashboard', href: '/dashboard' },
-        { name: 'Sessions', href: '#' },
-        { name: 'Skills', href: '#' },
-        { name: user?.role === 'tutor' ? 'Find Learners' : 'Find Tutors', href: '#' },
+        { name: 'Sessions', href: '/sessions' },
+        { name: 'Skills', href: '/skills' },
+        { name: user?.role === 'tutor' ? 'Find Learners' : 'Find Tutors', href: '/find-tutors' },
     ];
 
     return (
@@ -40,15 +41,21 @@ const Header = () => {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex space-x-8">
-                        {navigation.map((item) => (
-                            <Link
-                                key={item.name}
-                                to={item.href}
-                                className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                            >
-                                {item.name}
-                            </Link>
-                        ))}
+                        {navigation.map((item) => {
+                            const isActive = location.pathname === item.href;
+                            return (
+                                <Link
+                                    key={item.name}
+                                    to={item.href}
+                                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
+                                            ? 'text-indigo-600 bg-indigo-50'
+                                            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
                     </nav>
 
                     {/* Right side */}
@@ -82,14 +89,14 @@ const Header = () => {
                                         {user?.email}
                                     </div>
                                     <Link
-                                        to="#"
+                                        to="/profile"
                                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         onClick={() => setIsProfileOpen(false)}
                                     >
                                         Profile Settings
                                     </Link>
                                     <Link
-                                        to="#"
+                                        to="/profile?tab=settings"
                                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         onClick={() => setIsProfileOpen(false)}
                                     >
@@ -123,16 +130,22 @@ const Header = () => {
                 {isMobileMenuOpen && (
                     <div className="md:hidden">
                         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">
-                            {navigation.map((item) => (
-                                <Link
-                                    key={item.name}
-                                    to={item.href}
-                                    className="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    {item.name}
-                                </Link>
-                            ))}
+                            {navigation.map((item) => {
+                                const isActive = location.pathname === item.href;
+                                return (
+                                    <Link
+                                        key={item.name}
+                                        to={item.href}
+                                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${isActive
+                                                ? 'text-indigo-600 bg-indigo-50'
+                                                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                                            }`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        {item.name}
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </div>
                 )}

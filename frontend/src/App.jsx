@@ -7,6 +7,9 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Sessions from './pages/Sessions';
+import Skills from './pages/Skills';
+import FindTutors from './pages/FindTutors';
 
 // Component to handle redirect logic
 function RedirectToDashboard() {
@@ -39,6 +42,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sessions"
+              element={
+                <ProtectedRoute>
+                  <Sessions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/skills"
+              element={
+                <ProtectedRoute>
+                  <Skills />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/find-tutors"
+              element={
+                <ProtectedRoute>
+                  <FindTutors />
                 </ProtectedRoute>
               }
             />
