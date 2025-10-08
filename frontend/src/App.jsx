@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Sessions from './pages/Sessions';
+import CreateSession from './pages/CreateSession';
 import Skills from './pages/Skills';
 import FindTutors from './pages/FindTutors';
 
@@ -50,6 +51,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Sessions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sessions/create"
+              element={
+                <ProtectedRoute>
+                  <CreateSession />
                 </ProtectedRoute>
               }
             />

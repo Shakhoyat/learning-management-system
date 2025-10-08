@@ -31,7 +31,8 @@ export const sessionService = {
   // Create new session
   createSession: async (sessionData) => {
     const response = await api.post("/sessions", sessionData);
-    return response.session;
+    // Response structure: { success, message, data: { session } }
+    return response?.data?.session || response?.session || response;
   },
 
   // Update session
