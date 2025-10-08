@@ -10,7 +10,7 @@ export const sessionService = {
   // Get upcoming sessions
   getUpcomingSessions: async () => {
     const response = await api.get("/sessions/upcoming");
-    return response.sessions;
+    return response.data?.sessions || response.sessions || [];
   },
 
   // Get session statistics

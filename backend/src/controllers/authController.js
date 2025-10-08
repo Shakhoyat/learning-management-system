@@ -31,10 +31,13 @@ exports.register = async (req, res) => {
       bio,
     } = req.body;
 
+    console.log("Registering user with data:");
+    console.log(req.body);
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
+      return res.json({
         success: false,
         error: "User already exists with this email",
       });
@@ -48,7 +51,7 @@ exports.register = async (req, res) => {
     const emailVerificationToken = crypto.randomBytes(32).toString("hex");
 
     // Create user
-    const user = new User({
+    const user = await User.create({
       name,
       email,
       bio,
@@ -62,8 +65,6 @@ exports.register = async (req, res) => {
         isActive: true,
       },
     });
-
-    await user.save();
 
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user._id);

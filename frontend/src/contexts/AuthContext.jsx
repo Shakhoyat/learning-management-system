@@ -1,25 +1,46 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { authService } from '../services/auth';
 
 const AuthContext = createContext();
 
 const authReducer = (state, action) => {
     switch (action.type) {
         case 'LOGIN_START':
+        case 'REGISTER_START':
             return { ...state, loading: true, error: null };
         case 'LOGIN_SUCCESS':
+        case 'REGISTER_SUCCESS':
             return {
                 ...state,
                 loading: false,
                 user: action.payload.user,
-                token: action.payload.token,
-                isAuthenticated: true
+                tokens: action.payload.tokens,
+                isAuthenticated: true,
+                error: null
             };
         case 'LOGIN_FAILURE':
-            return { ...state, loading: false, error: action.payload, isAuthenticated: false };
+        case 'REGISTER_FAILURE':
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+                isAuthenticated: false,
+                user: null,
+                tokens: null
+            };
         case 'LOGOUT':
-            return { ...state, user: null, token: null, isAuthenticated: false };
+            return {
+                ...state,
+                user: null,
+                tokens: null,
+                isAuthenticated: false,
+                error: null,
+                loading: false
+            };
         case 'UPDATE_USER':
             return { ...state, user: { ...state.user, ...action.payload } };
+        case 'CLEAR_ERROR':
+            return { ...state, error: null };
         default:
             return state;
     }
@@ -27,7 +48,7 @@ const authReducer = (state, action) => {
 
 const initialState = {
     user: null,
-    token: localStorage.getItem('token'),
+    tokens: null,
     isAuthenticated: false,
     loading: false,
     error: null
@@ -37,90 +58,124 @@ export const AuthProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            // For demo purposes, we'll simulate a logged-in user
-            const demoUser = {
-                id: '1',
-                name: 'Demo User',
-                email: 'demo@example.com',
-                role: 'learner',
-                avatar: null
-            };
-            dispatch({ type: 'LOGIN_SUCCESS', payload: { user: demoUser, token } });
-        }
+        const checkAuthStatus = async () => {
+            const accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+
+            if (accessToken && refreshToken) {
+                try {
+                    const user = await authService.getCurrentUser();
+                    dispatch({
+                        type: 'LOGIN_SUCCESS',
+                        payload: {
+                            user,
+                            tokens: { accessToken, refreshToken }
+                        }
+                    });
+                } catch (error) {
+                    // Try to refresh token
+                    try {
+                        const response = await authService.refreshToken();
+                        localStorage.setItem('accessToken', response.data.accessToken);
+                        const user = await authService.getCurrentUser();
+                        dispatch({
+                            type: 'LOGIN_SUCCESS',
+                            payload: {
+                                user,
+                                tokens: {
+                                    accessToken: response.data.accessToken,
+                                    refreshToken
+                                }
+                            }
+                        });
+                    } catch (refreshError) {
+                        // Refresh failed, clear tokens
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        dispatch({ type: 'LOGOUT' });
+                    }
+                }
+            }
+        };
+
+        checkAuthStatus();
     }, []);
 
     const login = async (credentials) => {
         dispatch({ type: 'LOGIN_START' });
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const response = await authService.login(credentials);
 
-            const response = {
-                user: {
-                    id: '1',
-                    name: 'Demo User',
-                    email: credentials.email,
-                    role: credentials.role || 'learner',
-                    avatar: null
-                },
-                token: 'demo_token_' + Date.now()
-            };
+            if (response.success) {
+                const { user, tokens } = response.data;
 
-            localStorage.setItem('token', response.token);
-            dispatch({ type: 'LOGIN_SUCCESS', payload: response });
-            return response;
+                // Store tokens
+                localStorage.setItem('accessToken', tokens.accessToken);
+                localStorage.setItem('refreshToken', tokens.refreshToken);
+
+                dispatch({ type: 'LOGIN_SUCCESS', payload: { user, tokens } });
+                return response;
+            } else {
+                throw new Error(response.error || 'Login failed');
+            }
         } catch (error) {
-            dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
-            throw error;
+            const errorMessage = error.response?.data?.error || error.message || 'Login failed';
+            dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
+            throw new Error(errorMessage);
+        }
+    };
+
+    const register = async (userData) => {
+        dispatch({ type: 'REGISTER_START' });
+        try {
+            const response = await authService.register(userData);
+
+            if (response.success) {
+                const { user, tokens } = response.data;
+
+                // Store tokens
+                localStorage.setItem('accessToken', tokens.accessToken);
+                localStorage.setItem('refreshToken', tokens.refreshToken);
+
+                dispatch({ type: 'REGISTER_SUCCESS', payload: { user, tokens } });
+                return response;
+            } else {
+                throw new Error(response.error || 'Registration failed');
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || error.message || 'Registration failed';
+            dispatch({ type: 'REGISTER_FAILURE', payload: errorMessage });
+            throw new Error(errorMessage);
         }
     };
 
     const logout = async () => {
         try {
-            localStorage.removeItem('token');
-            dispatch({ type: 'LOGOUT' });
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (refreshToken) {
+                await authService.logout({ refreshToken });
+            }
         } catch (error) {
             console.error('Logout error:', error);
-            localStorage.removeItem('token');
+        } finally {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             dispatch({ type: 'LOGOUT' });
-        }
-    };
-
-    const register = async (userData) => {
-        dispatch({ type: 'LOGIN_START' });
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            const response = {
-                user: {
-                    id: '1',
-                    name: userData.name,
-                    email: userData.email,
-                    role: userData.role,
-                    avatar: null
-                },
-                token: 'demo_token_' + Date.now()
-            };
-
-            localStorage.setItem('token', response.token);
-            dispatch({ type: 'LOGIN_SUCCESS', payload: response });
-            return response;
-        } catch (error) {
-            dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
-            throw error;
         }
     };
 
     const updateProfile = async (updates) => {
         try {
-            dispatch({ type: 'UPDATE_USER', payload: updates });
-            return { ...state.user, ...updates };
+            const updatedUser = await authService.updateProfile(updates);
+            dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+            return updatedUser;
         } catch (error) {
             throw error;
         }
+    };
+
+    const clearError = () => {
+        dispatch({ type: 'CLEAR_ERROR' });
     };
 
     const value = {
@@ -128,7 +183,8 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         register,
-        updateProfile
+        updateProfile,
+        clearError
     };
 
     return (
