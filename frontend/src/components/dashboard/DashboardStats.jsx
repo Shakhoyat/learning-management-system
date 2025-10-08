@@ -8,30 +8,31 @@ import {
     UserGroupIcon
 } from '@heroicons/react/24/outline';
 
-const DashboardStats = ({ userRole }) => {
-    // Mock stats data
+const DashboardStats = ({ stats, userRole }) => {
+    if (!stats) return null;
+
     const tutorStats = [
         {
             title: 'Total Sessions',
-            value: 42,
+            value: stats.totalSessions || 0,
             icon: CalendarIcon,
             color: 'bg-blue-500'
         },
         {
             title: 'Total Earnings',
-            value: '$2,340',
+            value: `$${stats.totalEarnings || 0}`,
             icon: CurrencyDollarIcon,
             color: 'bg-green-500'
         },
         {
             title: 'Average Rating',
-            value: '4.8/5',
+            value: `${stats.averageRating || 0}/5`,
             icon: StarIcon,
             color: 'bg-yellow-500'
         },
         {
             title: 'Hours Taught',
-            value: '68h',
+            value: `${stats.hoursTaught || 0}h`,
             icon: ClockIcon,
             color: 'bg-purple-500'
         }
@@ -40,25 +41,25 @@ const DashboardStats = ({ userRole }) => {
     const learnerStats = [
         {
             title: 'Sessions Attended',
-            value: 15,
+            value: stats.sessionsAttended || 0,
             icon: CalendarIcon,
             color: 'bg-blue-500'
         },
         {
             title: 'Total Spent',
-            value: '$890',
+            value: `$${stats.totalSpent || 0}`,
             icon: CurrencyDollarIcon,
             color: 'bg-green-500'
         },
         {
             title: 'Skills Learning',
-            value: 4,
+            value: stats.skillsLearning || 0,
             icon: AcademicCapIcon,
             color: 'bg-indigo-500'
         },
         {
             title: 'Hours Learned',
-            value: '32h',
+            value: `${stats.hoursLearned || 0}h`,
             icon: ClockIcon,
             color: 'bg-purple-500'
         }

@@ -9,33 +9,33 @@ import {
     BellIcon
 } from '@heroicons/react/24/outline';
 
-const QuickActions = ({ userRole }) => {
+const QuickActions = ({ userRole, userStats }) => {
     const tutorActions = [
         {
             title: 'Create Session',
             description: 'Schedule a new tutoring session',
-            href: '#',
+            href: '/sessions/create',
             icon: PlusIcon,
             color: 'bg-indigo-600 hover:bg-indigo-700'
         },
         {
             title: 'Find Learners',
             description: 'Browse students looking for tutoring',
-            href: '#',
+            href: '/find-learners',
             icon: MagnifyingGlassIcon,
             color: 'bg-green-600 hover:bg-green-700'
         },
         {
             title: 'Manage Skills',
             description: 'Update your teaching skills',
-            href: '#',
+            href: '/profile?tab=skills',
             icon: AcademicCapIcon,
             color: 'bg-purple-600 hover:bg-purple-700'
         },
         {
             title: 'View Earnings',
             description: 'Check your payment history',
-            href: '#',
+            href: '/payments',
             icon: CurrencyDollarIcon,
             color: 'bg-yellow-600 hover:bg-yellow-700'
         }
@@ -45,28 +45,28 @@ const QuickActions = ({ userRole }) => {
         {
             title: 'Find Tutors',
             description: 'Search for expert tutors',
-            href: '#',
+            href: '/find-tutors',
             icon: MagnifyingGlassIcon,
             color: 'bg-indigo-600 hover:bg-indigo-700'
         },
         {
             title: 'My Sessions',
             description: 'View upcoming and past sessions',
-            href: '#',
+            href: '/sessions',
             icon: CalendarIcon,
             color: 'bg-blue-600 hover:bg-blue-700'
         },
         {
             title: 'Learning Goals',
             description: 'Set and track your goals',
-            href: '#',
+            href: '/profile?tab=goals',
             icon: AcademicCapIcon,
             color: 'bg-green-600 hover:bg-green-700'
         },
         {
             title: 'Browse Skills',
             description: 'Explore skills to learn',
-            href: '#',
+            href: '/skills',
             icon: AcademicCapIcon,
             color: 'bg-purple-600 hover:bg-purple-700'
         }
@@ -101,7 +101,7 @@ const QuickActions = ({ userRole }) => {
                 {/* Notifications Summary */}
                 <div className="mt-6 pt-6 border-t border-gray-200">
                     <Link
-                        to="#"
+                        to="/notifications"
                         className="flex items-center justify-between text-sm text-gray-600 hover:text-gray-900"
                     >
                         <div className="flex items-center">
@@ -109,7 +109,7 @@ const QuickActions = ({ userRole }) => {
                             <span>Notifications</span>
                         </div>
                         <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                            3
+                            {userStats?.unreadNotifications || 0}
                         </span>
                     </Link>
                 </div>
