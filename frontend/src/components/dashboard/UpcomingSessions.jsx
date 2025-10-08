@@ -16,6 +16,7 @@ const UpcomingSessions = ({ userRole }) => {
             setLoading(true);
             setError(null);
             const response = await sessionService.getUpcomingSessions();
+            console.log('Upcoming sessions response:', response);
             setSessions(response || []);
         } catch (err) {
             setError('Failed to load upcoming sessions');

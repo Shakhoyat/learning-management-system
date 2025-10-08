@@ -249,10 +249,12 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: {
       transform: function (doc, ret) {
-        delete ret.auth.passwordHash;
-        delete ret.auth.refreshTokens;
-        delete ret.auth.passwordResetToken;
-        delete ret.auth.emailVerificationToken;
+        if (ret.auth) {
+          delete ret.auth.passwordHash;
+          delete ret.auth.refreshTokens;
+          delete ret.auth.passwordResetToken;
+          delete ret.auth.emailVerificationToken;
+        }
         return ret;
       },
     },

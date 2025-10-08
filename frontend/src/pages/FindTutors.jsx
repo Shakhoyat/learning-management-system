@@ -27,17 +27,24 @@ const FindTutors = () => {
 
     useEffect(() => {
         fetchSkills();
-        fetchTutors();
     }, []);
 
     useEffect(() => {
-        fetchTutors();
-    }, [selectedSkill, minRating, maxPrice, sortBy, searchQuery]);
+        // Only fetch tutors if we have skills loaded
+        if (skills.length > 0) {
+            fetchTutors();
+        }
+    }, [selectedSkill, minRating, maxPrice, sortBy, searchQuery, skills.length]);
 
     const fetchSkills = async () => {
         try {
             const response = await skillService.getAllSkills();
-            setSkills(response.skills || []);
+            const skillsList = response?.data?.skills || response?.skills || [];
+            setSkills(skillsList);
+            // Set first skill as default if none selected
+            if (skillsList.length > 0 && !selectedSkill) {
+                setSelectedSkill(skillsList[0]._id);
+            }
         } catch (error) {
             console.error('Failed to fetch skills:', error);
         }
@@ -46,19 +53,30 @@ const FindTutors = () => {
     const fetchTutors = async () => {
         try {
             setLoading(true);
-            const params = {};
 
-            if (selectedSkill) params.skill = selectedSkill;
+            // If no skill selected, don't fetch (backend requires skillId)
+            if (!selectedSkill && skills.length > 0) {
+                setSelectedSkill(skills[0]._id);
+                return;
+            }
+
+            if (!selectedSkill) {
+                setLoading(false);
+                return;
+            }
+
+            const params = { skillId: selectedSkill };
+
             if (minRating) params.minRating = minRating;
-            if (maxPrice) params.maxPrice = maxPrice;
-            if (sortBy) params.sort = sortBy;
+            if (maxPrice) params.maxHourlyRate = maxPrice;
+            if (sortBy) params.sortBy = sortBy;
             if (searchQuery) params.search = searchQuery;
 
             const response = await matchingService.findTutors(params);
-            setTutors(response.data?.tutors || response.tutors || []);
+            setTutors(response?.data?.tutors || []);
         } catch (error) {
             console.error('Failed to fetch tutors:', error);
-            toast.error('Failed to load tutors');
+            toast.error(error.response?.data?.error || 'Failed to load tutors');
         } finally {
             setLoading(false);
         }

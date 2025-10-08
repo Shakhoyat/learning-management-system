@@ -40,10 +40,12 @@ const Sessions = () => {
             }
 
             const response = await sessionService.getAllSessions(params);
-            setSessions(response.data?.sessions || response.sessions || []);
+            // The API interceptor returns response.data, so we need to access data.sessions
+            const sessionsData = response?.data?.sessions || [];
+            setSessions(sessionsData);
         } catch (error) {
             console.error('Failed to fetch sessions:', error);
-            toast.error('Failed to load sessions');
+            toast.error(error.response?.data?.error || 'Failed to load sessions');
         } finally {
             setLoading(false);
         }
@@ -51,8 +53,9 @@ const Sessions = () => {
 
     const fetchStats = async () => {
         try {
-            const stats = await sessionService.getSessionStats();
-            setStats(stats);
+            const response = await sessionService.getSessionStats();
+            // The response should be in response.data.stats or response.stats
+            setStats(response?.data?.stats || response?.stats || null);
         } catch (error) {
             console.error('Failed to fetch stats:', error);
         }
@@ -211,8 +214,8 @@ const Sessions = () => {
                                     key={f}
                                     onClick={() => setFilter(f)}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${filter === f
-                                            ? 'bg-indigo-600 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
                                     {f.charAt(0).toUpperCase() + f.slice(1)}

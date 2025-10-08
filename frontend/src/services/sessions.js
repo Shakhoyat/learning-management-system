@@ -10,13 +10,16 @@ export const sessionService = {
   // Get upcoming sessions
   getUpcomingSessions: async () => {
     const response = await api.get("/sessions/upcoming");
-    return response.data?.sessions || response.sessions || [];
+    // API interceptor returns response.data, so we get { success, data: { sessions } }
+    console.log("Raw response in service:", response);
+    return response?.data?.sessions || response?.sessions || [];
   },
 
   // Get session statistics
   getSessionStats: async () => {
     const response = await api.get("/sessions/stats");
-    return response.stats;
+    // API interceptor returns response.data, so structure is: { success, data: { stats } }
+    return response?.data?.stats || null;
   },
 
   // Get session by ID

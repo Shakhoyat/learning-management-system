@@ -25,8 +25,8 @@ const Skills = () => {
           skillService.getCategories()
         ]);
 
-        setSkills(skillsData.skills || []);
-        setCategories(categoriesData || []);
+        setSkills(skillsData?.data?.skills || skillsData?.skills || []);
+        setCategories(categoriesData?.data?.categories || categoriesData?.categories || categoriesData || []);
       } catch (error) {
         console.error('Failed to fetch skills data:', error);
       } finally {
@@ -45,7 +45,7 @@ const Skills = () => {
           category: selectedCategory !== 'all' ? selectedCategory : undefined,
           sort: sortBy
         });
-        setSkills(searchResults.skills || []);
+        setSkills(searchResults?.data?.skills || searchResults?.skills || []);
       } catch (error) {
         console.error('Search failed:', error);
       }
