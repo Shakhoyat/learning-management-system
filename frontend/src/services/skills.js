@@ -80,4 +80,43 @@ export const skillService = {
     const response = await api.delete(`/skills/${skillId}`);
     return response;
   },
+
+  // User skill management
+  getUserSkills: async (userId) => {
+    const response = await api.get(`/users/${userId}`);
+    return {
+      teachingSkills: response.user?.teachingSkills || [],
+      learningSkills: response.user?.learningSkills || [],
+    };
+  },
+
+  addTeachingSkill: async (userId, skillData) => {
+    const response = await api.post(
+      `/users/${userId}/teaching-skills`,
+      skillData
+    );
+    return response.user;
+  },
+
+  removeTeachingSkill: async (userId, skillId) => {
+    const response = await api.delete(
+      `/users/${userId}/teaching-skills/${skillId}`
+    );
+    return response.user;
+  },
+
+  addLearningSkill: async (userId, skillData) => {
+    const response = await api.post(
+      `/users/${userId}/learning-skills`,
+      skillData
+    );
+    return response.user;
+  },
+
+  removeLearningSkill: async (userId, skillId) => {
+    const response = await api.delete(
+      `/users/${userId}/learning-skills/${skillId}`
+    );
+    return response.user;
+  },
 };

@@ -13,6 +13,7 @@ import Skills from './pages/Skills';
 import FindTutors from './pages/FindTutors';
 import FindLearners from './pages/FindLearners';
 import Notifications from './pages/Notifications';
+import Profile from './pages/Profile';
 
 // Component to handle redirect logic
 function RedirectToDashboard() {
@@ -93,6 +94,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Notifications />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

@@ -1,8 +1,8 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5173/api";
+// Base URL for the API (it goes to the proxy in vite.config.js)
+const API_BASE_URL = "/api";
 
 // Create axios instance
 const api = axios.create({
