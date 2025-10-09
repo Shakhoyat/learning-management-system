@@ -24,7 +24,7 @@ const Header = () => {
         { name: 'Dashboard', href: '/dashboard' },
         { name: 'Sessions', href: '/sessions' },
         { name: 'Skills', href: '/skills' },
-        { name: user?.role === 'tutor' ? 'Find Learners' : 'Find Tutors', href: '/find-tutors' },
+        { name: user?.role === 'tutor' ? 'Find Learners' : 'Find Tutors', href: user?.role === 'tutor' ? '/find-learners' : '/find-tutors' },
     ];
 
     return (
@@ -48,8 +48,8 @@ const Header = () => {
                                     key={item.name}
                                     to={item.href}
                                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
-                                            ? 'text-indigo-600 bg-indigo-50'
-                                            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                                        ? 'text-indigo-600 bg-indigo-50'
+                                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                         }`}
                                 >
                                     {item.name}
@@ -137,8 +137,8 @@ const Header = () => {
                                         key={item.name}
                                         to={item.href}
                                         className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${isActive
-                                                ? 'text-indigo-600 bg-indigo-50'
-                                                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                                            ? 'text-indigo-600 bg-indigo-50'
+                                            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                             }`}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
