@@ -11,6 +11,7 @@ import Sessions from './pages/Sessions';
 import CreateSession from './pages/CreateSession';
 import Skills from './pages/Skills';
 import FindTutors from './pages/FindTutors';
+import FindLearners from './pages/FindLearners';
 
 // Component to handle redirect logic
 function RedirectToDashboard() {
@@ -75,6 +76,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <FindTutors />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/find-learners"
+              element={
+                <ProtectedRoute>
+                  <FindLearners />
                 </ProtectedRoute>
               }
             />

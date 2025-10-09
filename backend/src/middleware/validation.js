@@ -71,9 +71,20 @@ const schemas = {
     tutorId: Joi.string().required(),
     skillId: Joi.string().required(),
     scheduledDate: Joi.date().min("now").required(),
-    duration: Joi.number().min(30).max(180).required(),
-    notes: Joi.string().max(500),
-    price: Joi.number().min(0),
+    duration: Joi.number().min(15).max(240).required(),
+    title: Joi.string().max(200).optional(),
+    description: Joi.string().max(1000).optional(),
+    objectives: Joi.array()
+      .items(
+        Joi.object({
+          description: Joi.string().required(),
+          completed: Joi.boolean().default(false),
+        })
+      )
+      .optional(),
+    hourlyRate: Joi.number().min(0).optional(),
+    notes: Joi.string().max(500).optional(),
+    price: Joi.number().min(0).optional(),
   }),
 
   // Payment creation
