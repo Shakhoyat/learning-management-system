@@ -10,25 +10,25 @@ export const paymentService = {
   // Get payment methods
   getPaymentMethods: async () => {
     const response = await api.get("/payments/methods");
-    return response.methods;
+    return response.data.paymentMethods;
   },
 
   // Get payment statistics
   getPaymentStats: async () => {
     const response = await api.get("/payments/stats");
-    return response.stats;
+    return response.data;
   },
 
   // Get payment by ID
   getPaymentById: async (paymentId) => {
     const response = await api.get(`/payments/${paymentId}`);
-    return response.payment;
+    return response.data.payment;
   },
 
   // Create payment
   createPayment: async (paymentData) => {
     const response = await api.post("/payments", paymentData);
-    return response.payment;
+    return response.data.payment;
   },
 
   // Request refund
@@ -36,6 +36,6 @@ export const paymentService = {
     const response = await api.post(`/payments/${paymentId}/refund`, {
       reason,
     });
-    return response;
+    return response.data;
   },
 };

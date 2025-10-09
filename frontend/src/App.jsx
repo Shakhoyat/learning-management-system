@@ -14,6 +14,7 @@ import FindTutors from './pages/FindTutors';
 import FindLearners from './pages/FindLearners';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
+import Payments from './pages/Payments';
 
 // Component to handle redirect logic
 function RedirectToDashboard() {
@@ -102,6 +103,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payments"
+              element={
+                <ProtectedRoute>
+                  <Payments />
                 </ProtectedRoute>
               }
             />
