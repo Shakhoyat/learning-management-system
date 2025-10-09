@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { notificationService } from '../../services/notifications';
-import { 
-    CheckCircleIcon, 
-    CalendarIcon, 
+import {
+    CheckCircleIcon,
+    CalendarIcon,
     StarIcon,
     UserGroupIcon,
     AcademicCapIcon,
@@ -20,11 +20,11 @@ const RecentActivity = () => {
     const loadRecentActivity = async () => {
         try {
             setLoading(true);
-            const response = await notificationService.getNotifications({ 
+            const response = await notificationService.getNotifications({
                 limit: 5,
-                page: 1 
+                page: 1
             });
-            
+
             // Extract notifications from response
             const notifications = response?.data?.notifications || response?.notifications || [];
             setActivities(notifications);
@@ -126,7 +126,7 @@ const RecentActivity = () => {
                 <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                     Recent Activity
                 </h3>
-                
+
                 {activities.length === 0 ? (
                     <div className="text-center py-6">
                         <BellIcon className="mx-auto h-12 w-12 text-gray-400" />

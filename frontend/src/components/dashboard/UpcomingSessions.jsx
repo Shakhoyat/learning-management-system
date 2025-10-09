@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { CalendarIcon, ClockIcon, UserIcon } from '@heroicons/react/24/outline';
 import { sessionService } from '../../services/sessions';
 
@@ -168,9 +169,21 @@ const UpcomingSessions = ({ userRole }) => {
                 )}
 
                 <div className="mt-6">
-                    <button className="w-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                        {userRole === 'tutor' ? 'Create New Session' : 'Browse Tutors'}
-                    </button>
+                    {userRole === 'tutor' ? (
+                        <Link
+                            to="/sessions/create"
+                            className="block w-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-4 py-2 rounded-md text-sm font-medium transition-colors text-center"
+                        >
+                            Create New Session
+                        </Link>
+                    ) : (
+                        <Link
+                            to="/find-tutors"
+                            className="block w-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-4 py-2 rounded-md text-sm font-medium transition-colors text-center"
+                        >
+                            Browse Tutors
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

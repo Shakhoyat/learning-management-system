@@ -4,6 +4,7 @@ import Header from '../components/common/Header';
 import DashboardStats from '../components/dashboard/DashboardStats';
 import UpcomingSessions from '../components/dashboard/UpcomingSessions';
 import QuickActions from '../components/dashboard/QuickActions';
+import RecentActivity from '../components/dashboard/RecentActivity';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -39,56 +40,7 @@ const Dashboard = () => {
                             <UpcomingSessions userRole={user?.role} />
 
                             {/* Recent Activity */}
-                            <div className="bg-white shadow rounded-lg">
-                                <div className="px-4 py-5 sm:p-6">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                                        Recent Activity
-                                    </h3>
-                                    <div className="space-y-4">
-                                        <div className="flex items-start space-x-3">
-                                            <div className="flex-shrink-0">
-                                                <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                                    <span className="text-green-600 text-sm">✓</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-sm text-gray-900">
-                                                    Completed session: "Introduction to React Hooks"
-                                                </p>
-                                                <p className="text-sm text-gray-500">2 hours ago</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start space-x-3">
-                                            <div className="flex-shrink-0">
-                                                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                                    <span className="text-blue-600 text-sm">📅</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-sm text-gray-900">
-                                                    New session booked: "Advanced Python Concepts"
-                                                </p>
-                                                <p className="text-sm text-gray-500">1 day ago</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start space-x-3">
-                                            <div className="flex-shrink-0">
-                                                <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
-                                                    <span className="text-yellow-600 text-sm">⭐</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-sm text-gray-900">
-                                                    Received 5-star rating from Sarah Chen
-                                                </p>
-                                                <p className="text-sm text-gray-500">2 days ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <RecentActivity />
                         </div>
 
                         {/* Right Column - Quick Actions */}

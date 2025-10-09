@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { notificationService } from '../../services/notifications';
+import NotificationPanel from '../notifications/NotificationPanel';
 import {
     AcademicCapIcon,
     BellIcon,
@@ -14,10 +16,38 @@ const Header = () => {
     const location = useLocation();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        loadUnreadCount();
+        // Poll for new notifications every 30 seconds
+        const interval = setInterval(loadUnreadCount, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const loadUnreadCount = async () => {
+        try {
+            const count = await notificationService.getUnreadCount();
+            setUnreadCount(count || 0);
+        } catch (error) {
+            console.error('Failed to load unread count:', error);
+        }
+    };
 
     const handleLogout = () => {
         logout();
         setIsProfileOpen(false);
+    };
+
+    const handleNotificationToggle = () => {
+        setIsNotificationOpen(!isNotificationOpen);
+        setIsProfileOpen(false);
+    };
+
+    const handleProfileToggle = () => {
+        setIsProfileOpen(!isProfileOpen);
+        setIsNotificationOpen(false);
     };
 
     const navigation = [
@@ -61,17 +91,29 @@ const Header = () => {
                     {/* Right side */}
                     <div className="flex items-center space-x-4">
                         {/* Notifications */}
-                        <button className="text-gray-400 hover:text-gray-500 relative">
-                            <BellIcon className="h-6 w-6" />
-                            <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                                3
-                            </span>
-                        </button>
+                        <div className="relative">
+                            <button
+                                onClick={handleNotificationToggle}
+                                className="text-gray-400 hover:text-gray-500 relative focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full p-1"
+                            >
+                                <BellIcon className="h-6 w-6" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            <NotificationPanel
+                                isOpen={isNotificationOpen}
+                                onClose={() => setIsNotificationOpen(false)}
+                            />
+                        </div>
 
                         {/* Profile dropdown */}
                         <div className="relative">
                             <button
-                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                onClick={handleProfileToggle}
                                 className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">
