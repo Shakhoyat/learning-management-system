@@ -15,6 +15,8 @@ import {
     DocumentTextIcon,
     FunnelIcon
 } from '@heroicons/react/24/outline';
+import { EarningsTrendsSection } from '../components/charts';
+import { useChartData } from '../hooks/useChartData';
 
 const Payments = () => {
     const { user } = useAuth();
@@ -33,8 +35,13 @@ const Payments = () => {
         page: 1,
         limit: 10
     });
+    const [allPayments, setAllPayments] = useState([]); // Store all payments for charts
+
+    // Process chart data using custom hook
+    const chartData = useChartData(allPayments, user?.role);
 
     useEffect(() => {
+        fetchAllPayments(); // Fetch all payments for charts
         fetchPayments();
         fetchStats();
     }, [filters]);
@@ -53,6 +60,18 @@ const Payments = () => {
             toast.error('Failed to load payments');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAllPayments = async () => {
+        try {
+            // Fetch all payments without pagination for chart data
+            const data = await paymentService.getAllPayments({ limit: 1000 });
+            if (data.success) {
+                setAllPayments(data.data.payments);
+            }
+        } catch (error) {
+            console.error('Error fetching all payments:', error);
         }
     };
 
@@ -247,6 +266,9 @@ const Payments = () => {
                         </div>
                     </div>
                 )}
+
+                {/* Charts Section - Only for tutors */}
+                {isTutor && <EarningsTrendsSection chartData={chartData} />}
 
                 {/* Filters */}
                 <div className="px-4 sm:px-0 mb-6">
