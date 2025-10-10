@@ -16,28 +16,32 @@ const QuickActions = ({ userRole, userStats }) => {
             description: 'Schedule a new tutoring session',
             href: '/sessions/create',
             icon: PlusIcon,
-            color: 'bg-indigo-600 hover:bg-indigo-700'
+            gradient: 'from-indigo-600 to-purple-600',
+            hoverGradient: 'from-indigo-700 to-purple-700'
         },
         {
             title: 'Find Learners',
             description: 'Browse students looking for tutoring',
             href: '/find-learners',
             icon: MagnifyingGlassIcon,
-            color: 'bg-green-600 hover:bg-green-700'
+            gradient: 'from-emerald-500 to-teal-600',
+            hoverGradient: 'from-emerald-600 to-teal-700'
         },
         {
             title: 'Manage Skills',
             description: 'Update your teaching skills',
             href: '/profile?tab=skills',
             icon: AcademicCapIcon,
-            color: 'bg-purple-600 hover:bg-purple-700'
+            gradient: 'from-purple-500 to-indigo-600',
+            hoverGradient: 'from-purple-600 to-indigo-700'
         },
         {
             title: 'View Earnings',
             description: 'Check your payment history',
             href: '/payments',
             icon: CurrencyDollarIcon,
-            color: 'bg-yellow-600 hover:bg-yellow-700'
+            gradient: 'from-amber-500 to-orange-600',
+            hoverGradient: 'from-amber-600 to-orange-700'
         }
     ];
 
@@ -47,51 +51,57 @@ const QuickActions = ({ userRole, userStats }) => {
             description: 'Search for expert tutors',
             href: '/find-tutors',
             icon: MagnifyingGlassIcon,
-            color: 'bg-indigo-600 hover:bg-indigo-700'
+            gradient: 'from-indigo-600 to-purple-600',
+            hoverGradient: 'from-indigo-700 to-purple-700'
         },
         {
             title: 'My Sessions',
             description: 'View upcoming and past sessions',
             href: '/sessions',
             icon: CalendarIcon,
-            color: 'bg-blue-600 hover:bg-blue-700'
+            gradient: 'from-blue-500 to-indigo-600',
+            hoverGradient: 'from-blue-600 to-indigo-700'
         },
         {
             title: 'Learning Goals',
             description: 'Set and track your goals',
             href: '/profile?tab=goals',
             icon: AcademicCapIcon,
-            color: 'bg-green-600 hover:bg-green-700'
+            gradient: 'from-emerald-500 to-teal-600',
+            hoverGradient: 'from-emerald-600 to-teal-700'
         },
         {
             title: 'Browse Skills',
             description: 'Explore skills to learn',
             href: '/skills',
             icon: AcademicCapIcon,
-            color: 'bg-purple-600 hover:bg-purple-700'
+            gradient: 'from-purple-500 to-indigo-600',
+            hoverGradient: 'from-purple-600 to-indigo-700'
         }
     ];
 
     const actions = userRole === 'tutor' ? tutorActions : learnerActions;
 
     return (
-        <div className="bg-white shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+        <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl border border-slate-200/50">
+            <div className="px-6 py-6 sm:p-8">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">
                     Quick Actions
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {actions.map((action, index) => (
                         <Link
                             key={index}
                             to={action.href}
-                            className={`${action.color} text-white p-4 rounded-lg block transition-colors`}
+                            className={`group bg-gradient-to-r ${action.gradient} hover:${action.hoverGradient} text-white p-5 rounded-xl block transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl`}
                         >
                             <div className="flex items-center">
-                                <action.icon className="h-6 w-6 mr-3" />
+                                <div className="p-2 bg-white/20 rounded-lg mr-4 group-hover:bg-white/30 transition-colors">
+                                    <action.icon className="h-6 w-6" />
+                                </div>
                                 <div>
-                                    <div className="font-medium">{action.title}</div>
-                                    <div className="text-sm opacity-90">{action.description}</div>
+                                    <div className="font-semibold text-lg">{action.title}</div>
+                                    <div className="text-sm opacity-90 mt-1">{action.description}</div>
                                 </div>
                             </div>
                         </Link>
@@ -99,16 +109,18 @@ const QuickActions = ({ userRole, userStats }) => {
                 </div>
 
                 {/* Notifications Summary */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="mt-8 pt-6 border-t border-slate-200">
                     <Link
                         to="/notifications"
-                        className="flex items-center justify-between text-sm text-gray-600 hover:text-gray-900"
+                        className="flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all duration-200 group"
                     >
                         <div className="flex items-center">
-                            <BellIcon className="h-5 w-5 mr-2" />
-                            <span>Notifications</span>
+                            <div className="p-2 bg-indigo-100 rounded-lg mr-3 group-hover:bg-indigo-200 transition-colors">
+                                <BellIcon className="h-5 w-5 text-indigo-600" />
+                            </div>
+                            <span className="font-semibold text-slate-700">Notifications</span>
                         </div>
-                        <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        <span className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
                             {userStats?.unreadNotifications || 0}
                         </span>
                     </Link>

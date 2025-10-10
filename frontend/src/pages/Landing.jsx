@@ -150,31 +150,33 @@ const Landing = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* Clean Professional Header */}
-            <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+            {/* Modern Professional Header */}
+            <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
                         {/* Logo */}
-                        <Link to="/" className="flex items-center">
-                            <AcademicCapIcon className="h-8 w-8 text-blue-600" />
-                            <span className="ml-2 text-xl font-bold text-gray-900">
+                        <Link to="/" className="flex items-center group">
+                            <div className="p-2 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                                <AcademicCapIcon className="h-6 w-6 text-white" />
+                            </div>
+                            <span className="ml-3 text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                                 EduVerse
                             </span>
                         </Link>
 
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex items-center space-x-8">
-                            <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                            <a href="#features" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-all duration-200 hover:scale-105">
                                 Key features
                             </a>
-                            <a href="#solutions" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                            <a href="#solutions" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-all duration-200 hover:scale-105">
                                 Solutions
                             </a>
-                            <a href="#testimonials" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                            <a href="#testimonials" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-all duration-200 hover:scale-105">
                                 Success stories
                             </a>
-                            <a href="#about" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                            <a href="#about" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-all duration-200 hover:scale-105">
                                 About us
                             </a>
                         </nav>
@@ -183,13 +185,13 @@ const Landing = () => {
                         <div className="hidden md:flex items-center space-x-4">
                             <Link
                                 to="/login"
-                                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                                className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-all duration-200 px-4 py-2 rounded-lg hover:bg-slate-50"
                             >
                                 Login
                             </Link>
                             <Link
                                 to="/register"
-                                className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+                                className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                                 Get EduVerse
                             </Link>
@@ -198,7 +200,7 @@ const Landing = () => {
                         {/* Mobile Menu Button */}
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded"
+                            className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
                         >
                             {mobileMenuOpen ? (
                                 <XMarkIcon className="h-6 w-6" />
@@ -210,25 +212,25 @@ const Landing = () => {
 
                     {/* Mobile Menu */}
                     {mobileMenuOpen && (
-                        <div className="md:hidden py-4 border-t border-gray-200">
+                        <div className="md:hidden py-4 border-t border-slate-200/60 bg-white/95 backdrop-blur-sm rounded-b-2xl">
                             <nav className="flex flex-col space-y-3">
-                                <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>
+                                <a href="#features" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Key features
                                 </a>
-                                <a href="#solutions" className="text-sm font-medium text-gray-700 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>
+                                <a href="#solutions" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Solutions
                                 </a>
-                                <a href="#testimonials" className="text-sm font-medium text-gray-700 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>
+                                <a href="#testimonials" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     Success stories
                                 </a>
-                                <a href="#about" className="text-sm font-medium text-gray-700 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>
+                                <a href="#about" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors" onClick={() => setMobileMenuOpen(false)}>
                                     About us
                                 </a>
-                                <div className="pt-3 flex flex-col space-y-2">
-                                    <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-blue-600">
+                                <div className="pt-3 flex flex-col space-y-3 px-4">
+                                    <Link to="/login" className="text-sm font-semibold text-slate-700 hover:text-indigo-600 py-2 rounded-lg hover:bg-slate-50 transition-colors">
                                         Login
                                     </Link>
-                                    <Link to="/register" className="px-5 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded hover:bg-blue-700">
+                                    <Link to="/register" className="px-6 py-3 text-sm font-semibold text-center text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg">
                                         Get EduVerse
                                     </Link>
                                 </div>
@@ -238,59 +240,74 @@ const Landing = () => {
                 </div>
             </header>
 
-            {/* Hero Section - Moodle-inspired */}
-            <section className="bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Hero Section - Modern Design */}
+            <section className="relative overflow-hidden">
+                {/* Background Elements */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50"></div>
+                <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-indigo-100 to-transparent rounded-full blur-3xl opacity-50"></div>
+                <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-gradient-to-tr from-purple-100 to-transparent rounded-full blur-3xl opacity-50"></div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+                    <div className="grid lg:grid-cols-2 gap-16 items-center">
                         {/* Left Content */}
                         <motion.div
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true, margin: "-100px" }}
                             variants={slideInLeft}
+                            className="z-10"
                         >
                             <motion.h1
-                                className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
+                                className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight"
                                 variants={fadeInUp}
                             >
-                                Data-driven insights. Human-centered learning.
+                                <span className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent">
+                                    Data-driven insights.
+                                </span>
+                                <br />
+                                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent">
+                                    Human-centered learning.
+                                </span>
                             </motion.h1>
                             <motion.p
-                                className="text-2xl md:text-3xl font-semibold text-gray-800 mb-8 leading-relaxed"
+                                className="text-2xl md:text-3xl font-semibold text-slate-700 mb-8 leading-relaxed"
                                 variants={fadeInUp}
                             >
-                                Empower your educators. Engage your learners.
+                                Empower your educators. <span className="text-indigo-600">Engage your learners.</span>
                             </motion.p>
                             <motion.blockquote
-                                className="border-l-4 border-blue-600 pl-6 mb-6"
+                                className="relative pl-8 mb-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-indigo-600 before:to-purple-600 before:rounded-full"
                                 variants={fadeInUp}
                             >
-                                <p className="text-lg md:text-xl text-gray-700 italic mb-3 leading-relaxed">
+                                <p className="text-lg md:text-xl text-slate-600 italic mb-4 leading-relaxed">
                                     "Technology will not replace great teachers, but technology in the hands of great teachers can be transformational."
                                 </p>
-                                <cite className="text-base text-gray-600 font-medium not-italic">
+                                <cite className="text-base text-slate-500 font-semibold not-italic">
                                     — George Couros
                                 </cite>
                             </motion.blockquote>
                             <motion.p
-                                className="text-xl md:text-2xl font-medium text-gray-900 mb-8 leading-relaxed"
+                                className="text-xl md:text-2xl font-semibold mb-10 leading-relaxed"
                                 variants={fadeInUp}
                             >
-                                Shape the future of education with EduVerse LMS.
+                                <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                                    Shape the future of education with
+                                </span>
+                                <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent font-bold"> EduVerse LMS.</span>
                             </motion.p>
                             <motion.div
-                                className="flex flex-col sm:flex-row gap-4"
+                                className="flex flex-col sm:flex-row gap-6"
                                 variants={fadeInUp}
                             >
                                 <Link
                                     to="/register"
-                                    className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-all hover:scale-105"
+                                    className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                                 >
                                     Get started free
-                                    <ArrowRightIcon className="ml-2 h-5 w-5" />
+                                    <ArrowRightIcon className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                 </Link>
-                                <button className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-blue-600 bg-white border-2 border-blue-600 rounded hover:bg-blue-50 transition-all hover:scale-105">
-                                    <PlayCircleIcon className="mr-2 h-5 w-5" />
+                                <button className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-indigo-600 bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-2xl hover:bg-white hover:border-indigo-300 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                    <PlayCircleIcon className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
                                     Watch demo
                                 </button>
                             </motion.div>
@@ -298,28 +315,34 @@ const Landing = () => {
 
                         {/* Right Image */}
                         <motion.div
-                            className="relative"
+                            className="relative z-10"
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true, margin: "-100px" }}
                             variants={slideInRight}
                         >
                             <motion.div
-                                className="aspect-w-16 aspect-h-10 rounded-lg overflow-hidden shadow-2xl"
+                                className="relative rounded-3xl overflow-hidden shadow-2xl group"
                                 whileHover={{ scale: 1.02 }}
                                 transition={{ duration: 0.3 }}
                             >
+                                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/20 to-purple-600/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 <img
                                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop"
                                     alt="Students learning together"
                                     className="w-full h-full object-cover"
                                 />
                             </motion.div>
-                            {/* Decorative accent */}
+                            {/* Decorative Elements */}
                             <motion.div
-                                className="absolute -bottom-6 -left-6 w-24 h-24 bg-orange-400 rounded-full opacity-20 blur-2xl"
-                                animate={{ scale: [1, 1.2, 1] }}
-                                transition={{ duration: 3, repeat: Infinity }}
+                                className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full opacity-20 blur-2xl"
+                                animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+                                transition={{ duration: 8, repeat: Infinity }}
+                            ></motion.div>
+                            <motion.div
+                                className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-20 blur-2xl"
+                                animate={{ scale: [1.2, 1, 1.2], rotate: [90, 0, 90] }}
+                                transition={{ duration: 6, repeat: Infinity }}
                             ></motion.div>
                         </motion.div>
                     </div>
@@ -327,31 +350,39 @@ const Landing = () => {
             </section>
 
             {/* What is EduVerse LMS Section */}
-            <section id="about" className="bg-gray-50 py-20">
+            <section id="about" className="relative py-24 bg-gradient-to-b from-slate-50 to-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
-                        className="max-w-3xl"
+                        className="max-w-4xl"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-100px" }}
                         variants={staggerContainer}
                     >
-                        <motion.p
-                            className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3"
+                        <motion.div
+                            className="mb-12"
                             variants={fadeInUp}
                         >
-                            What is EduVerse LMS?
-                        </motion.p>
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+                                What is EduVerse LMS?
+                            </h2>
+                        </motion.div>
 
                         {/* Why Choose EduVerse */}
                         <motion.div
-                            className="grid md:grid-cols-2 gap-4 mb-8"
+                            className="grid md:grid-cols-2 gap-6 mb-12"
                             variants={staggerContainer}
                         >
                             {whyChoose.map((item, index) => (
-                                <motion.div key={index} className="flex items-start" variants={fadeInUp}>
-                                    <CheckCircleIcon className="h-6 w-6 text-blue-600 mr-3 flex-shrink-0 mt-0.5" />
-                                    <span className="text-gray-700">{item}</span>
+                                <motion.div
+                                    key={index}
+                                    className="flex items-start p-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-200/50 hover:bg-white/80 hover:border-indigo-200 transition-all duration-300 hover:scale-105 hover:shadow-lg group"
+                                    variants={fadeInUp}
+                                >
+                                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                                        <CheckCircleIcon className="h-5 w-5 text-white" />
+                                    </div>
+                                    <span className="text-slate-700 font-medium leading-relaxed">{item}</span>
                                 </motion.div>
                             ))}
                         </motion.div>
@@ -359,10 +390,10 @@ const Landing = () => {
                         <motion.div variants={fadeInUp}>
                             <Link
                                 to="/register"
-                                className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-all hover:scale-105"
+                                className="group inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                                 Get started free
-                                <ArrowRightIcon className="ml-2 h-5 w-5" />
+                                <ArrowRightIcon className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </motion.div>
                     </motion.div>
@@ -370,20 +401,32 @@ const Landing = () => {
             </section>
 
             {/* Key Features Section */}
-            <section id="features" className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section id="features" className="py-24 bg-white relative overflow-hidden">
+                {/* Background Elements */}
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full blur-3xl opacity-30"></div>
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full blur-3xl opacity-30"></div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
-                        className="text-center mb-16"
+                        className="text-center mb-20"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-100px" }}
                         variants={fadeInUp}
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                            Key features that set us apart
+                        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full mb-6">
+                            <CogIcon className="h-5 w-5 text-indigo-600 mr-2" />
+                            <span className="text-sm font-bold text-indigo-700 uppercase tracking-wide">
+                                Key Features
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                            <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                Features that set us apart
+                            </span>
                         </h2>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Everything you need to create engaging learning experiences
+                        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                            Everything you need to create engaging learning experiences with cutting-edge technology
                         </p>
                     </motion.div>
 
@@ -397,24 +440,30 @@ const Landing = () => {
                         {keyFeatures.map((feature, index) => (
                             <motion.div
                                 key={index}
-                                className="text-center group"
+                                className="group text-center relative"
                                 variants={scaleIn}
-                                whileHover={{ y: -10 }}
+                                whileHover={{ y: -12 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <motion.div
-                                    className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4 group-hover:bg-blue-600 transition-colors duration-300"
-                                    whileHover={{ rotate: 360 }}
-                                    transition={{ duration: 0.6 }}
-                                >
-                                    <feature.icon className="h-8 w-8 text-blue-600 group-hover:text-white transition-colors duration-300" />
-                                </motion.div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                    {feature.title}
-                                </h3>
-                                <p className="text-gray-600 text-sm leading-relaxed">
-                                    {feature.description}
-                                </p>
+                                <div className="relative p-8 bg-white rounded-3xl shadow-lg border border-slate-200/50 hover:shadow-2xl hover:border-indigo-200 transition-all duration-300 h-full">
+                                    <motion.div
+                                        className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                                        whileHover={{ rotate: [0, -10, 10, 0] }}
+                                        transition={{ duration: 0.6 }}
+                                    >
+                                        <feature.icon className="h-10 w-10 text-white" />
+                                    </motion.div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-slate-600 leading-relaxed">
+                                        {feature.description}
+                                    </p>
+
+                                    {/* Decorative Elements */}
+                                    <div className="absolute top-4 right-4 w-2 h-2 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <div className="absolute bottom-4 left-4 w-1 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity delay-100"></div>
+                                </div>
                             </motion.div>
                         ))}
                     </motion.div>
@@ -422,25 +471,33 @@ const Landing = () => {
             </section>
 
             {/* Solutions Section */}
-            <section id="solutions" className="py-20 bg-gray-50">
+            <section id="solutions" className="py-24 bg-gradient-to-b from-slate-50 to-white relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
-                        className="text-center mb-16"
+                        className="text-center mb-20"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-100px" }}
                         variants={fadeInUp}
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                            Solutions for every learning environment
+                        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full mb-6">
+                            <UserGroupIcon className="h-5 w-5 text-indigo-600 mr-2" />
+                            <span className="text-sm font-bold text-indigo-700 uppercase tracking-wide">
+                                Solutions
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                            <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                Perfect for every learning environment
+                            </span>
                         </h2>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Trusted by institutions and organizations worldwide
+                        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                            Trusted by institutions and organizations worldwide to deliver exceptional educational experiences
                         </p>
                     </motion.div>
 
                     <motion.div
-                        className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+                        className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-100px" }}
@@ -449,37 +506,63 @@ const Landing = () => {
                         {useCases.map((useCase, index) => (
                             <motion.div
                                 key={index}
-                                className="bg-white rounded-lg p-6 hover:shadow-lg transition-all border border-gray-200"
+                                className="group relative"
                                 variants={fadeInUp}
-                                whileHover={{ y: -5, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" }}
+                                whileHover={{ y: -8 }}
                             >
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                    {useCase.title}
-                                </h3>
-                                <p className="text-gray-600 text-sm leading-relaxed">
-                                    {useCase.description}
-                                </p>
+                                <div className="relative h-full p-8 bg-white rounded-3xl border border-slate-200/50 hover:border-indigo-200 transition-all duration-300 shadow-lg hover:shadow-2xl overflow-hidden">
+                                    {/* Background Gradient */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                                    {/* Content */}
+                                    <div className="relative z-10">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl mb-6 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <div className="w-6 h-6 bg-white rounded-md"></div>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors">
+                                            {useCase.title}
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed">
+                                            {useCase.description}
+                                        </p>
+                                    </div>
+
+                                    {/* Decorative Elements */}
+                                    <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full opacity-0 group-hover:opacity-50 transition-opacity duration-300 blur-xl"></div>
+                                </div>
                             </motion.div>
                         ))}
                     </motion.div>
                 </div>
             </section>
 
-            {/* Testimonials Section - Moodle-inspired */}
-            <section id="testimonials" className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Testimonials Section - Modern Design */}
+            <section id="testimonials" className="py-24 bg-white relative overflow-hidden">
+                {/* Background Elements */}
+                <div className="absolute top-1/4 left-0 w-72 h-72 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full blur-3xl opacity-40"></div>
+                <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full blur-3xl opacity-40"></div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
-                        className="text-center mb-16"
+                        className="text-center mb-20"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true, margin: "-100px" }}
                         variants={fadeInUp}
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                            Success stories from around the world
+                        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full mb-6">
+                            <ChartBarIcon className="h-5 w-5 text-indigo-600 mr-2" />
+                            <span className="text-sm font-bold text-indigo-700 uppercase tracking-wide">
+                                Success Stories
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                            <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                Transforming education worldwide
+                            </span>
                         </h2>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            See how institutions are transforming education with EduVerse
+                        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                            See how institutions are revolutionizing learning experiences with EduVerse
                         </p>
                     </motion.div>
 
@@ -493,32 +576,48 @@ const Landing = () => {
                         {testimonials.map((testimonial, index) => (
                             <motion.div
                                 key={index}
-                                className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-2xl transition-shadow group"
+                                className="group relative"
                                 variants={fadeInUp}
-                                whileHover={{ y: -10 }}
+                                whileHover={{ y: -12 }}
                             >
-                                {/* Professional Image */}
-                                <div className="h-64 bg-gray-200 overflow-hidden relative">
-                                    <motion.img
-                                        src={testimonial.image}
-                                        alt={testimonial.name}
-                                        className="w-full h-full object-cover grayscale"
-                                        whileHover={{ scale: 1.1, filter: "grayscale(0%)" }}
-                                        transition={{ duration: 0.4 }}
-                                    />
-                                    <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                                </div>
+                                <div className="relative h-full bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200/50 hover:border-indigo-200">
+                                    {/* Professional Image */}
+                                    <div className="relative h-80 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
+                                        <motion.img
+                                            src={testimonial.image}
+                                            alt={testimonial.name}
+                                            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                                            whileHover={{ filter: "grayscale(0%)" }}
+                                            style={{ filter: "grayscale(30%)" }}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                {/* Content */}
-                                <div className="p-6">
-                                    <p className="text-gray-700 italic mb-4 leading-relaxed">
-                                        "{testimonial.content}"
-                                    </p>
-                                    <div className="border-t border-gray-200 pt-4">
-                                        <p className="font-bold text-gray-900">{testimonial.name}</p>
-                                        <p className="text-sm text-gray-600">{testimonial.role}</p>
-                                        <p className="text-sm text-blue-600 font-medium">{testimonial.organization}</p>
+                                        {/* Floating Quote Icon */}
+                                        <div className="absolute top-6 right-6 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
+                                            <span className="text-indigo-600 text-2xl font-serif">"</span>
+                                        </div>
                                     </div>
+
+                                    {/* Content */}
+                                    <div className="p-8">
+                                        <div className="mb-6">
+                                            <p className="text-slate-700 italic leading-relaxed text-lg">
+                                                "{testimonial.content}"
+                                            </p>
+                                        </div>
+
+                                        <div className="relative">
+                                            <div className="absolute -top-4 left-0 w-12 h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
+                                            <div className="pt-4">
+                                                <p className="font-bold text-slate-900 text-lg mb-1">{testimonial.name}</p>
+                                                <p className="text-slate-600 font-medium mb-1">{testimonial.role}</p>
+                                                <p className="text-indigo-600 font-semibold">{testimonial.organization}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Decorative Elements */}
+                                    <div className="absolute bottom-4 right-4 w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full opacity-0 group-hover:opacity-50 transition-opacity duration-300 blur-xl"></div>
                                 </div>
                             </motion.div>
                         ))}
@@ -527,94 +626,160 @@ const Landing = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-blue-600">
+            <section className="relative py-24 overflow-hidden">
+                {/* Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900"></div>
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"></div>
+
+                {/* Floating Elements */}
+                <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full blur-2xl opacity-20 animate-pulse"></div>
+                <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full blur-2xl opacity-20 animate-pulse delay-1000"></div>
+
                 <motion.div
-                    className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+                    className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
                     variants={staggerContainer}
                 >
                     <motion.h2
-                        className="text-3xl md:text-4xl font-bold text-white mb-6"
+                        className="text-4xl md:text-6xl font-bold mb-8"
                         variants={fadeInUp}
                     >
-                        Ready to transform your learning environment?
+                        <span className="bg-gradient-to-r from-white to-indigo-100 bg-clip-text text-transparent">
+                            Ready to transform your
+                        </span>
+                        <br />
+                        <span className="bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                            learning environment?
+                        </span>
                     </motion.h2>
                     <motion.p
-                        className="text-xl text-blue-100 mb-8"
+                        className="text-xl md:text-2xl text-indigo-100 mb-12 leading-relaxed max-w-3xl mx-auto"
                         variants={fadeInUp}
                     >
-                        Join thousands of institutions worldwide using EduVerse LMS
+                        Join thousands of institutions worldwide using EduVerse LMS to create exceptional educational experiences
                     </motion.p>
                     <motion.div
-                        className="flex flex-col sm:flex-row gap-4 justify-center"
+                        className="flex flex-col sm:flex-row gap-6 justify-center"
                         variants={fadeInUp}
                     >
                         <Link
                             to="/register"
-                            className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-blue-600 bg-white rounded hover:bg-gray-50 transition-all hover:scale-105"
+                            className="group inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-indigo-600 bg-white rounded-2xl hover:bg-indigo-50 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105"
                         >
                             Get started free
-                            <ArrowRightIcon className="ml-2 h-5 w-5" />
+                            <ArrowRightIcon className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
                             to="/contact"
-                            className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-blue-700 rounded hover:bg-blue-800 transition-all hover:scale-105 border-2 border-white"
+                            className="group inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-white bg-white/10 backdrop-blur-sm rounded-2xl hover:bg-white/20 transition-all duration-300 border-2 border-white/20 hover:border-white/40 transform hover:scale-105"
                         >
                             Contact sales
+                            <ArrowRightIcon className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
                         </Link>
+                    </motion.div>
+
+                    {/* Trust Indicators */}
+                    <motion.div
+                        className="mt-16 pt-8 border-t border-white/20"
+                        variants={fadeInUp}
+                    >
+                        <p className="text-indigo-200 text-sm mb-4 uppercase tracking-wide font-semibold">
+                            Trusted by 50,000+ institutions worldwide
+                        </p>
+                        <div className="flex justify-center items-center space-x-8 opacity-60">
+                            <div className="text-white/80 text-sm font-medium">Universities</div>
+                            <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                            <div className="text-white/80 text-sm font-medium">Corporations</div>
+                            <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                            <div className="text-white/80 text-sm font-medium">K-12 Schools</div>
+                            <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                            <div className="text-white/80 text-sm font-medium">Government</div>
+                        </div>
                     </motion.div>
                 </motion.div>
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-gray-300">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="grid md:grid-cols-4 gap-8 mb-8">
-                        <div>
-                            <div className="flex items-center mb-4">
-                                <AcademicCapIcon className="h-8 w-8 text-blue-400" />
-                                <span className="ml-2 text-xl font-bold text-white">EduVerse</span>
+            <footer className="relative bg-slate-900 text-slate-300 overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDYwIDAgTCAwIDAgMCA2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-50"></div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="grid md:grid-cols-4 gap-12 mb-12">
+                        <div className="md:col-span-1">
+                            <div className="flex items-center mb-6">
+                                <div className="p-2 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg">
+                                    <AcademicCapIcon className="h-6 w-6 text-white" />
+                                </div>
+                                <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                                    EduVerse
+                                </span>
                             </div>
-                            <p className="text-sm text-gray-400">
-                                Empowering education through technology
+                            <p className="text-slate-400 leading-relaxed mb-6">
+                                Empowering education through innovative technology and human-centered design
                             </p>
+
+                            {/* Social Links */}
+                            <div className="flex space-x-4">
+                                <a href="#" className="w-10 h-10 bg-slate-800 hover:bg-indigo-600 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    <span className="text-sm font-bold">f</span>
+                                </a>
+                                <a href="#" className="w-10 h-10 bg-slate-800 hover:bg-indigo-600 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    <span className="text-sm font-bold">t</span>
+                                </a>
+                                <a href="#" className="w-10 h-10 bg-slate-800 hover:bg-indigo-600 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    <span className="text-sm font-bold">in</span>
+                                </a>
+                            </div>
                         </div>
 
                         <div>
-                            <h4 className="font-semibold text-white mb-4">Product</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                                <li><a href="#solutions" className="hover:text-white transition-colors">Solutions</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
+                            <h4 className="font-bold text-white mb-6 text-lg">Product</h4>
+                            <ul className="space-y-4">
+                                <li><a href="#features" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Features</a></li>
+                                <li><a href="#solutions" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Solutions</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Pricing</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Documentation</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">API Reference</a></li>
                             </ul>
                         </div>
 
                         <div>
-                            <h4 className="font-semibold text-white mb-4">Company</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><a href="#about" className="hover:text-white transition-colors">About</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                            <h4 className="font-bold text-white mb-6 text-lg">Company</h4>
+                            <ul className="space-y-4">
+                                <li><a href="#about" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">About</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Blog</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Careers</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Contact</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Press Kit</a></li>
                             </ul>
                         </div>
 
                         <div>
-                            <h4 className="font-semibold text-white mb-4">Support</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                            <h4 className="font-bold text-white mb-6 text-lg">Support</h4>
+                            <ul className="space-y-4">
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Help Center</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Community</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Privacy Policy</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Terms of Service</a></li>
+                                <li><a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors duration-200 hover:translate-x-1 inline-block">Cookie Policy</a></li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-                        <p>&copy; {new Date().getFullYear()} EduVerse. All rights reserved.</p>
+                    <div className="border-t border-slate-800 pt-8">
+                        <div className="flex flex-col md:flex-row justify-between items-center">
+                            <p className="text-slate-400 text-sm mb-4 md:mb-0">
+                                &copy; {new Date().getFullYear()} EduVerse. All rights reserved. Built with ❤️ for educators worldwide.
+                            </p>
+                            <div className="flex items-center space-x-6 text-sm text-slate-400">
+                                <span>🌟 4.9/5 from 50,000+ users</span>
+                                <div className="w-1 h-1 bg-slate-600 rounded-full"></div>
+                                <span>🚀 99.9% uptime</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </footer>

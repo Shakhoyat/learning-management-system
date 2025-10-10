@@ -16,25 +16,25 @@ const DashboardStats = ({ stats, userRole }) => {
             title: 'Total Sessions',
             value: stats.totalSessions || 0,
             icon: CalendarIcon,
-            color: 'bg-blue-500'
+            gradient: 'from-blue-500 to-indigo-600'
         },
         {
             title: 'Total Earnings',
             value: `$${stats.totalEarnings || 0}`,
             icon: CurrencyDollarIcon,
-            color: 'bg-green-500'
+            gradient: 'from-emerald-500 to-teal-600'
         },
         {
             title: 'Average Rating',
             value: `${stats.averageRating || 0}/5`,
             icon: StarIcon,
-            color: 'bg-yellow-500'
+            gradient: 'from-amber-500 to-orange-600'
         },
         {
             title: 'Hours Taught',
             value: `${stats.hoursTaught || 0}h`,
             icon: ClockIcon,
-            color: 'bg-purple-500'
+            gradient: 'from-purple-500 to-indigo-600'
         }
     ];
 
@@ -43,47 +43,47 @@ const DashboardStats = ({ stats, userRole }) => {
             title: 'Sessions Attended',
             value: stats.sessionsAttended || 0,
             icon: CalendarIcon,
-            color: 'bg-blue-500'
+            gradient: 'from-blue-500 to-indigo-600'
         },
         {
             title: 'Total Spent',
             value: `$${stats.totalSpent || 0}`,
             icon: CurrencyDollarIcon,
-            color: 'bg-green-500'
+            gradient: 'from-emerald-500 to-teal-600'
         },
         {
             title: 'Skills Learning',
             value: stats.skillsLearning || 0,
             icon: AcademicCapIcon,
-            color: 'bg-indigo-500'
+            gradient: 'from-indigo-500 to-purple-600'
         },
         {
             title: 'Hours Learned',
             value: `${stats.hoursLearned || 0}h`,
             icon: ClockIcon,
-            color: 'bg-purple-500'
+            gradient: 'from-purple-500 to-indigo-600'
         }
     ];
 
     const displayStats = userRole === 'tutor' ? tutorStats : learnerStats;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {displayStats.map((stat, index) => (
-                <div key={index} className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
+                <div key={index} className="group bg-white/80 backdrop-blur-sm overflow-hidden shadow-lg rounded-2xl border border-slate-200/50 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="p-6">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
-                                <div className={`${stat.color} p-3 rounded-lg`}>
+                                <div className={`bg-gradient-to-br ${stat.gradient} p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
                                     <stat.icon className="h-6 w-6 text-white" />
                                 </div>
                             </div>
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">
+                                    <dt className="text-sm font-semibold text-slate-600 truncate">
                                         {stat.title}
                                     </dt>
-                                    <dd className="text-lg font-medium text-gray-900">
+                                    <dd className="text-2xl font-bold text-slate-900 mt-1">
                                         {stat.value}
                                     </dd>
                                 </dl>

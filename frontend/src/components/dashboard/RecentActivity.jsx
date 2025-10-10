@@ -39,38 +39,38 @@ const RecentActivity = () => {
     const getActivityIcon = (type, category) => {
         switch (type) {
             case 'session_completed':
-                return <CheckCircleIcon className="h-5 w-5 text-green-600" />;
+                return <CheckCircleIcon className="h-5 w-5 text-emerald-600" />;
             case 'session_booked':
             case 'session_scheduled':
                 return <CalendarIcon className="h-5 w-5 text-blue-600" />;
             case 'session_feedback':
             case 'rating_received':
-                return <StarIcon className="h-5 w-5 text-yellow-600" />;
+                return <StarIcon className="h-5 w-5 text-amber-600" />;
             case 'match_found':
                 return <UserGroupIcon className="h-5 w-5 text-purple-600" />;
             case 'skill_updated':
                 return <AcademicCapIcon className="h-5 w-5 text-indigo-600" />;
             default:
-                return <BellIcon className="h-5 w-5 text-gray-600" />;
+                return <BellIcon className="h-5 w-5 text-slate-600" />;
         }
     };
 
     const getActivityColor = (type) => {
         switch (type) {
             case 'session_completed':
-                return 'bg-green-100';
+                return 'bg-emerald-100 border-emerald-200';
             case 'session_booked':
             case 'session_scheduled':
-                return 'bg-blue-100';
+                return 'bg-blue-100 border-blue-200';
             case 'session_feedback':
             case 'rating_received':
-                return 'bg-yellow-100';
+                return 'bg-amber-100 border-amber-200';
             case 'match_found':
-                return 'bg-purple-100';
+                return 'bg-purple-100 border-purple-200';
             case 'skill_updated':
-                return 'bg-indigo-100';
+                return 'bg-indigo-100 border-indigo-200';
             default:
-                return 'bg-gray-100';
+                return 'bg-slate-100 border-slate-200';
         }
     };
 
@@ -97,20 +97,20 @@ const RecentActivity = () => {
 
     if (loading) {
         return (
-            <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+            <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl border border-slate-200/50">
+                <div className="px-6 py-6 sm:p-8">
+                    <h3 className="text-xl font-bold text-slate-900 mb-6">
                         Recent Activity
                     </h3>
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-start space-x-3 animate-pulse">
+                            <div key={i} className="flex items-start space-x-4 animate-pulse">
                                 <div className="flex-shrink-0">
-                                    <div className="h-8 w-8 rounded-full bg-gray-200"></div>
+                                    <div className="h-10 w-10 rounded-xl bg-slate-200"></div>
                                 </div>
-                                <div className="flex-1 space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                    <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                                <div className="flex-1 space-y-3">
+                                    <div className="h-4 bg-slate-200 rounded-lg w-3/4"></div>
+                                    <div className="h-3 bg-slate-200 rounded-lg w-1/4"></div>
                                 </div>
                             </div>
                         ))}
@@ -121,32 +121,34 @@ const RecentActivity = () => {
     }
 
     return (
-        <div className="bg-white shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+        <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl border border-slate-200/50">
+            <div className="px-6 py-6 sm:p-8">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">
                     Recent Activity
                 </h3>
 
                 {activities.length === 0 ? (
-                    <div className="text-center py-6">
-                        <BellIcon className="mx-auto h-12 w-12 text-gray-400" />
-                        <p className="mt-2 text-sm text-gray-500">No recent activity</p>
-                        <p className="text-xs text-gray-400">Your recent activities will appear here</p>
+                    <div className="text-center py-8">
+                        <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <BellIcon className="h-8 w-8 text-slate-400" />
+                        </div>
+                        <p className="text-lg font-semibold text-slate-900 mb-2">No recent activity</p>
+                        <p className="text-slate-600">Your recent activities will appear here</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         {activities.map((activity) => (
-                            <div key={activity._id} className="flex items-start space-x-3">
+                            <div key={activity._id} className="flex items-start space-x-4 p-4 rounded-xl hover:bg-slate-50 transition-colors duration-200 group">
                                 <div className="flex-shrink-0">
-                                    <div className={`h-8 w-8 rounded-full ${getActivityColor(activity.type)} flex items-center justify-center`}>
+                                    <div className={`h-10 w-10 rounded-xl border ${getActivityColor(activity.type)} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
                                         {getActivityIcon(activity.type, activity.category)}
                                     </div>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-900">
+                                    <p className="text-sm font-medium text-slate-900 leading-relaxed">
                                         {activity.message || activity.content}
                                     </p>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-sm text-slate-500 mt-1 font-medium">
                                         {formatTimeAgo(activity.createdAt)}
                                     </p>
                                 </div>

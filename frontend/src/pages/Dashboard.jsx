@@ -12,16 +12,16 @@ const Dashboard = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
             <Header />
 
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 {/* Welcome Header */}
                 <div className="px-4 py-6 sm:px-0">
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        Welcome back, {user?.name}!
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                        Welcome back, {user?.name}! 👋
                     </h1>
-                    <p className="mt-1 text-sm text-gray-600">
+                    <p className="mt-2 text-lg text-slate-600">
                         {user?.role === 'tutor'
                             ? "Here's what's happening with your tutoring sessions today."
                             : "Continue your learning journey with upcoming sessions and new opportunities."
@@ -50,42 +50,42 @@ const Dashboard = () => {
                             <QuickActions userRole={user?.role} />
 
                             {/* Progress Overview */}
-                            <div className="bg-white shadow rounded-lg mt-8">
-                                <div className="px-4 py-5 sm:p-6">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl border border-slate-200/50 mt-8">
+                                <div className="px-6 py-6 sm:p-8">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-6">
                                         {user?.role === 'tutor' ? 'Teaching Progress' : 'Learning Progress'}
                                     </h3>
 
-                                    <div className="space-y-4">
+                                    <div className="space-y-6">
                                         <div>
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-600">This Month</span>
-                                                <span className="font-medium">
+                                            <div className="flex justify-between text-sm mb-2">
+                                                <span className="text-slate-600 font-medium">This Month</span>
+                                                <span className="font-bold text-slate-900">
                                                     {user?.role === 'tutor' ? '12 sessions' : '8 sessions'}
                                                 </span>
                                             </div>
-                                            <div className="mt-1 bg-gray-200 rounded-full h-2">
-                                                <div className="bg-indigo-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+                                            <div className="bg-slate-200 rounded-full h-3 overflow-hidden">
+                                                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-300" style={{ width: '75%' }}></div>
                                             </div>
                                         </div>
 
                                         <div>
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-600">
+                                            <div className="flex justify-between text-sm mb-2">
+                                                <span className="text-slate-600 font-medium">
                                                     {user?.role === 'tutor' ? 'Monthly Goal' : 'Learning Goals'}
                                                 </span>
-                                                <span className="font-medium">75%</span>
+                                                <span className="font-bold text-slate-900">75%</span>
                                             </div>
-                                            <div className="mt-1 bg-gray-200 rounded-full h-2">
-                                                <div className="bg-green-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+                                            <div className="bg-slate-200 rounded-full h-3 overflow-hidden">
+                                                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-300" style={{ width: '75%' }}></div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="mt-6">
+                                    <div className="mt-8">
                                         <button
                                             onClick={() => navigate('/analytics')}
-                                            className="w-full bg-gray-50 text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                                         >
                                             View Detailed Analytics
                                         </button>
