@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/common/Header';
 import DashboardStats from '../components/dashboard/DashboardStats';
@@ -8,6 +9,7 @@ import RecentActivity from '../components/dashboard/RecentActivity';
 
 const Dashboard = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -81,7 +83,10 @@ const Dashboard = () => {
                                     </div>
 
                                     <div className="mt-6">
-                                        <button className="w-full bg-gray-50 text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                        <button
+                                            onClick={() => navigate('/analytics')}
+                                            className="w-full bg-gray-50 text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                        >
                                             View Detailed Analytics
                                         </button>
                                     </div>

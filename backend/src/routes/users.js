@@ -3,12 +3,17 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const { authenticate, authorize } = require("../middleware/auth");
 
+// Protected routes - Analytics (MUST be before /:id routes)
+router.get("/analytics", authenticate, userController.getUserAnalytics);
+router.get("/me/progress", authenticate, userController.getLearningProgress);
+router.get("/me/achievements", authenticate, userController.getAchievements);
+
 // Public routes
 router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUserById);
 router.get("/:id/stats", userController.getUserStats);
 
-// Protected routes
+// Protected routes - Profile management
 router.put("/:id", authenticate, userController.updateUser);
 router.delete("/:id", authenticate, userController.deleteUser);
 

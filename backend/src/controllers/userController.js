@@ -591,3 +591,404 @@ async function updateSkillStats(skillId) {
     logger.error("Update skill stats error:", error);
   }
 }
+
+// Get comprehensive user analytics
+exports.getUserAnalytics = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { timeframe = "30d", metrics = "learning,teaching,engagement" } =
+      req.query;
+
+    // Calculate date range based on timeframe
+    const now = new Date();
+    let startDate;
+    switch (timeframe) {
+      case "7d":
+        startDate = new Date(now.setDate(now.getDate() - 7));
+        break;
+      case "30d":
+        startDate = new Date(now.setDate(now.getDate() - 30));
+        break;
+      case "90d":
+        startDate = new Date(now.setDate(now.getDate() - 90));
+        break;
+      case "1y":
+        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+        break;
+      default:
+        startDate = new Date(now.setDate(now.getDate() - 30));
+    }
+
+    const requestedMetrics = metrics.split(",");
+    const analytics = {
+      overview: {},
+    };
+
+    // Get user data
+    const user = await User.findById(userId)
+      .populate("learningSkills.skillId", "name category")
+      .populate("teachingSkills.skillId", "name category");
+
+    // Overview stats (always included)
+    const [allSessions, completedSessions] = await Promise.all([
+      Session.find({
+        $or: [{ learner: userId }, { tutor: userId }],
+        scheduledStartTime: { $gte: startDate },
+      }),
+      Session.find({
+        $or: [{ learner: userId }, { tutor: userId }],
+        status: "completed",
+        scheduledStartTime: { $gte: startDate },
+      }),
+    ]);
+
+    const totalHours = completedSessions.reduce(
+      (sum, session) =>
+        sum + (session.actualDuration || session.scheduledDuration || 0) / 60,
+      0
+    );
+
+    const ratings = completedSessions
+      .map((s) => s.feedback?.learner?.rating || s.feedback?.tutor?.rating)
+      .filter((r) => r);
+    const averageRating =
+      ratings.length > 0
+        ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+        : 0;
+
+    analytics.overview = {
+      totalSessions: allSessions.length,
+      hoursLearned: user.role === "learner" ? totalHours : 0,
+      hoursTaught: user.role === "tutor" ? totalHours : 0,
+      averageRating: averageRating,
+      profileViews: Math.floor(Math.random() * 500) + 100, // Placeholder
+    };
+
+    // Learning Progress Metrics
+    if (requestedMetrics.includes("learning") && user.role === "learner") {
+      const learningSessions = await Session.find({
+        learner: userId,
+        scheduledStartTime: { $gte: startDate },
+      }).populate("skillId", "name category");
+
+      // Calculate skills in progress and completed
+      const skillsInProgress = user.learningSkills.filter(
+        (ls) => ls.currentLevel < ls.targetLevel
+      ).length;
+      const skillsCompleted = user.learningSkills.filter(
+        (ls) => ls.currentLevel >= ls.targetLevel
+      ).length;
+
+      // Calculate average progress
+      const totalProgress = user.learningSkills.reduce((sum, ls) => {
+        const progress =
+          ls.targetLevel > 0 ? ls.currentLevel / ls.targetLevel : 0;
+        return sum + progress;
+      }, 0);
+      const averageProgress =
+        user.learningSkills.length > 0
+          ? totalProgress / user.learningSkills.length
+          : 0;
+
+      // Time spent by category
+      const categoryTime = {};
+      learningSessions.forEach((session) => {
+        const category = session.skillId?.category || "Other";
+        const hours =
+          (session.actualDuration || session.scheduledDuration || 0) / 60;
+        categoryTime[category] = (categoryTime[category] || 0) + hours;
+      });
+
+      // Generate progress trend (daily data points)
+      const progressTrend = [];
+      const daysToShow =
+        timeframe === "7d"
+          ? 7
+          : timeframe === "30d"
+          ? 30
+          : timeframe === "90d"
+          ? 30
+          : 365;
+      const interval = timeframe === "1y" ? 12 : 1; // Monthly for 1y, daily otherwise
+
+      for (let i = daysToShow - 1; i >= 0; i -= interval) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+
+        // Simulate progress increase over time (in production, track this in DB)
+        const baseProgress = averageProgress * 0.5;
+        const progressIncrement =
+          averageProgress * 0.5 * ((daysToShow - i) / daysToShow);
+
+        progressTrend.push({
+          date: date.toISOString(),
+          progress: Math.min(baseProgress + progressIncrement, 1),
+        });
+      }
+
+      analytics.learningProgress = {
+        skillsInProgress,
+        skillsCompleted,
+        averageProgress,
+        timeSpentByCategory: categoryTime,
+        progressTrend,
+      };
+    }
+
+    // Teaching Performance Metrics
+    if (requestedMetrics.includes("teaching") && user.role === "tutor") {
+      const teachingSessions = await Session.find({
+        tutor: userId,
+        scheduledStartTime: { $gte: startDate },
+      });
+
+      const completedTeachingSessions = teachingSessions.filter(
+        (s) => s.status === "completed"
+      );
+
+      const completionRate =
+        teachingSessions.length > 0
+          ? completedTeachingSessions.length / teachingSessions.length
+          : 0;
+
+      const sessionRatings = completedTeachingSessions
+        .map((s) => s.feedback?.learner?.rating)
+        .filter((r) => r);
+      const avgSessionRating =
+        sessionRatings.length > 0
+          ? sessionRatings.reduce((a, b) => a + b, 0) / sessionRatings.length
+          : 0;
+
+      // Unique students
+      const uniqueStudents = new Set(
+        teachingSessions.map((s) => s.learner.toString())
+      );
+
+      // Earnings by month
+      const earningsByMonth = {};
+      completedTeachingSessions.forEach((session) => {
+        const month = new Date(session.scheduledStartTime)
+          .toISOString()
+          .slice(0, 7);
+        earningsByMonth[month] =
+          (earningsByMonth[month] || 0) + (session.pricing?.totalAmount || 0);
+      });
+
+      // Popular skills
+      const skillCounts = {};
+      teachingSessions.forEach((session) => {
+        const skillId = session.skillId?.toString();
+        if (skillId) {
+          skillCounts[skillId] = (skillCounts[skillId] || 0) + 1;
+        }
+      });
+
+      const popularSkills = Object.entries(skillCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([skillId, count]) => ({
+          skillId,
+          sessionCount: count,
+        }));
+
+      analytics.teachingPerformance = {
+        studentsAcquired: uniqueStudents.size,
+        sessionCompletionRate: completionRate,
+        averageSessionRating: avgSessionRating,
+        earningsByMonth,
+        popularSkills,
+      };
+    }
+
+    // Engagement Metrics
+    if (requestedMetrics.includes("engagement")) {
+      // Calculate login frequency (simplified - in production track actual logins)
+      const lastLogin = user.auth?.lastLogin;
+      let loginFrequency = "occasional";
+      if (lastLogin) {
+        const daysSinceLogin =
+          (Date.now() - new Date(lastLogin)) / (1000 * 60 * 60 * 24);
+        if (daysSinceLogin < 1) loginFrequency = "daily";
+        else if (daysSinceLogin < 7) loginFrequency = "weekly";
+        else if (daysSinceLogin < 30) loginFrequency = "monthly";
+      }
+
+      // Average session duration
+      const avgDuration =
+        completedSessions.length > 0
+          ? completedSessions.reduce(
+              (sum, s) => sum + (s.actualDuration || s.scheduledDuration || 0),
+              0
+            ) / completedSessions.length
+          : 0;
+
+      const avgDurationStr =
+        avgDuration > 0
+          ? `${Math.floor(avgDuration / 60)}h ${Math.floor(avgDuration % 60)}m`
+          : "N/A";
+
+      analytics.engagement = {
+        loginFrequency,
+        averageSessionDuration: avgDurationStr,
+        messagesExchanged: Math.floor(Math.random() * 200) + 50, // Placeholder - implement messaging later
+      };
+    }
+
+    res.json({
+      success: true,
+      analytics,
+    });
+  } catch (error) {
+    logger.error("Get user analytics error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to retrieve analytics",
+    });
+  }
+};
+
+// Get learning progress details
+exports.getLearningProgress = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate(
+      "learningSkills.skillId",
+      "name category difficulty"
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const sessions = await Session.find({
+      learner: userId,
+      status: "completed",
+    });
+
+    const totalHours = sessions.reduce(
+      (sum, session) =>
+        sum + (session.actualDuration || session.scheduledDuration || 0) / 60,
+      0
+    );
+
+    const progress = {
+      learningSkills: user.learningSkills.map((ls) => ({
+        skill: ls.skillId,
+        currentLevel: ls.currentLevel,
+        targetLevel: ls.targetLevel,
+        hoursLearned: ls.hoursLearned,
+        progress: ls.targetLevel > 0 ? ls.currentLevel / ls.targetLevel : 0,
+      })),
+      totalHours,
+      totalSessions: sessions.length,
+      skillsInProgress: user.learningSkills.filter(
+        (ls) => ls.currentLevel < ls.targetLevel
+      ).length,
+      averageProgress:
+        user.learningSkills.length > 0
+          ? user.learningSkills.reduce((sum, ls) => {
+              const prog =
+                ls.targetLevel > 0 ? ls.currentLevel / ls.targetLevel : 0;
+              return sum + prog;
+            }, 0) / user.learningSkills.length
+          : 0,
+    };
+
+    res.json({
+      success: true,
+      progress,
+    });
+  } catch (error) {
+    logger.error("Get learning progress error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to retrieve learning progress",
+    });
+  }
+};
+
+// Get user achievements
+exports.getAchievements = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    const sessions = await Session.find({
+      $or: [{ learner: userId }, { tutor: userId }],
+      status: "completed",
+    });
+
+    const achievements = [];
+    const points = sessions.length * 10;
+
+    // Define achievements based on milestones
+    if (sessions.length >= 1) {
+      achievements.push({
+        id: "first_session",
+        name: "First Steps",
+        description: "Completed your first session",
+        earnedAt: sessions[0].scheduledEndTime,
+        icon: "🎯",
+      });
+    }
+
+    if (sessions.length >= 10) {
+      achievements.push({
+        id: "ten_sessions",
+        name: "Dedicated Learner",
+        description: "Completed 10 sessions",
+        earnedAt: sessions[9].scheduledEndTime,
+        icon: "🌟",
+      });
+    }
+
+    if (sessions.length >= 50) {
+      achievements.push({
+        id: "fifty_sessions",
+        name: "Expert Level",
+        description: "Completed 50 sessions",
+        earnedAt: sessions[49].scheduledEndTime,
+        icon: "🏆",
+      });
+    }
+
+    const totalHours = sessions.reduce(
+      (sum, s) => sum + (s.actualDuration || s.scheduledDuration || 0) / 60,
+      0
+    );
+
+    if (totalHours >= 100) {
+      achievements.push({
+        id: "hundred_hours",
+        name: "Century Club",
+        description: "Completed 100 hours of learning",
+        earnedAt: new Date(),
+        icon: "💯",
+      });
+    }
+
+    // Calculate level based on points
+    const level = Math.floor(points / 100) + 1;
+    const pointsToNextLevel = level * 100 - points;
+
+    res.json({
+      success: true,
+      achievements,
+      progress: {
+        totalPoints: points,
+        currentLevel: level,
+        pointsToNextLevel,
+      },
+    });
+  } catch (error) {
+    logger.error("Get achievements error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to retrieve achievements",
+    });
+  }
+};

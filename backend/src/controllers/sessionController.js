@@ -613,17 +613,61 @@ exports.getSessionStats = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const stats = await Session.getUserStats(userId);
+    // Get all sessions for the user
+    const allSessions = await Session.find({
+      $or: [{ learner: userId }, { tutor: userId }],
+    });
+
+    // Count by status
+    const upcoming = allSessions.filter(
+      (s) =>
+        s.status === "scheduled" && new Date(s.scheduledStartTime) > new Date()
+    ).length;
+
+    const completed = allSessions.filter(
+      (s) => s.status === "completed"
+    ).length;
+
+    const cancelled = allSessions.filter(
+      (s) => s.status === "cancelled"
+    ).length;
+
+    // Calculate total hours from completed sessions
+    const totalHours = allSessions
+      .filter((s) => s.status === "completed")
+      .reduce(
+        (sum, s) => sum + (s.actualDuration || s.scheduledDuration || 0) / 60,
+        0
+      );
+
+    // Calculate average rating
+    const sessionsWithRatings = allSessions.filter(
+      (s) =>
+        s.status === "completed" &&
+        (s.feedback?.learner?.rating || s.feedback?.tutor?.rating)
+    );
+
+    const avgRating =
+      sessionsWithRatings.length > 0
+        ? sessionsWithRatings.reduce((sum, s) => {
+            const rating =
+              s.feedback?.learner?.rating || s.feedback?.tutor?.rating || 0;
+            return sum + rating;
+          }, 0) / sessionsWithRatings.length
+        : 0;
+
+    const stats = {
+      total: allSessions.length,
+      upcoming,
+      completed,
+      cancelled,
+      totalHours: parseFloat(totalHours.toFixed(1)),
+      averageRating: parseFloat(avgRating.toFixed(1)),
+    };
 
     res.json({
       success: true,
-      data: {
-        stats: stats[0] || {
-          totalSessions: 0,
-          totalHours: 0,
-          averageRating: 0,
-        },
-      },
+      stats,
     });
   } catch (error) {
     logger.error("Get session stats error:", error);
