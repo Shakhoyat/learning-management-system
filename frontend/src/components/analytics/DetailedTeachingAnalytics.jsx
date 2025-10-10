@@ -9,14 +9,38 @@ import {
     Star,
     Clock,
     Award,
-    Target,
     BookOpen,
     Activity,
     Calendar,
     ArrowUp,
     ArrowDown,
     Minus,
+    TrendingDown,
+    Zap,
+    BarChart3,
 } from 'lucide-react';
+import {
+    LineChart,
+    Line,
+    BarChart,
+    Bar,
+    PieChart,
+    Pie,
+    Cell,
+    AreaChart,
+    Area,
+    RadarChart,
+    Radar,
+    PolarGrid,
+    PolarAngleAxis,
+    PolarRadiusAxis,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+} from 'recharts';
 
 const DetailedTeachingAnalytics = () => {
     const { user } = useAuth();
@@ -92,13 +116,67 @@ const DetailedTeachingAnalytics = () => {
     const previous = analytics.previous;
     const insights = analytics.insights || [];
 
+    // Prepare chart data
+    const sessionStatusData = [
+        { name: 'Completed', value: current.sessionMetrics?.completed || 0, color: '#10b981' },
+        { name: 'Cancelled', value: current.sessionMetrics?.cancelled || 0, color: '#ef4444' },
+        { name: 'No Show', value: current.sessionMetrics?.noShows || 0, color: '#f59e0b' },
+    ];
+
+    const studentMetricsData = [
+        { name: 'New', value: current.studentMetrics?.newStudents || 0 },
+        { name: 'Returning', value: current.studentMetrics?.returningStudents || 0 },
+    ];
+
+    const ratingCategoriesData = current.ratings?.categories
+        ? Object.entries(current.ratings.categories).map(([category, rating]) => ({
+            category: category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            rating: rating,
+            fullMark: 5,
+        }))
+        : [];
+
+    const earningsComparisonData = [
+        {
+            name: 'Current',
+            gross: current.earnings?.gross || 0,
+            fees: current.earnings?.platformFees || 0,
+            net: current.earnings?.net || 0,
+        },
+        ...(previous ? [{
+            name: 'Previous',
+            gross: previous.earnings?.gross || 0,
+            fees: previous.earnings?.platformFees || 0,
+            net: previous.earnings?.net || 0,
+        }] : []),
+    ];
+
+    const qualityMetricsRadarData = current.qualityMetrics ? [
+        { metric: 'Preparation', score: current.qualityMetrics.preparationScore, fullMark: 10 },
+        { metric: 'Consistency', score: current.qualityMetrics.consistencyScore, fullMark: 10 },
+        { metric: 'Professionalism', score: current.qualityMetrics.professionalismScore, fullMark: 10 },
+        { metric: 'Overall', score: current.qualityMetrics.overallQualityScore, fullMark: 10 },
+    ] : [];
+
+    const COLORS = {
+        primary: '#6366f1',
+        success: '#10b981',
+        warning: '#f59e0b',
+        danger: '#ef4444',
+        info: '#3b82f6',
+        purple: '#8b5cf6',
+    };
+
     return (
         <div className="space-y-6">
             {/* Header Controls */}
-            <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-lg shadow">
+            <div className="flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-xl shadow-lg">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Detailed Teaching Analytics</h2>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <h2 className="text-3xl font-bold text-white flex items-center gap-2">
+                        <BarChart3 className="w-8 h-8" />
+                        Teaching Analytics Dashboard
+                    </h2>
+                    <p className="text-sm text-indigo-100 mt-1">
                         {new Date(analytics.period.startDate).toLocaleDateString()} - {new Date(analytics.period.endDate).toLocaleDateString()}
                     </p>
                 </div>
@@ -107,9 +185,9 @@ const DetailedTeachingAnalytics = () => {
                         <button
                             key={option.value}
                             onClick={() => setPeriod(option.value)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${period === option.value
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${period === option.value
+                                ? 'bg-white text-indigo-600 shadow-md'
+                                : 'bg-indigo-500/30 text-white hover:bg-indigo-500/50'
                                 }`}
                         >
                             {option.label}
@@ -120,26 +198,23 @@ const DetailedTeachingAnalytics = () => {
 
             {/* Insights Section */}
             {insights.length > 0 && (
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg border border-indigo-200">
+                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border border-indigo-200 shadow-sm">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <Activity className="w-5 h-5 mr-2 text-indigo-600" />
-                        Insights & Recommendations
+                        <Zap className="w-5 h-5 mr-2 text-indigo-600" />
+                        AI-Powered Insights
                     </h3>
-                    <div className="space-y-3">
-                        {insights.map((insight, index) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {insights.slice(0, 4).map((insight, index) => (
                             <div
                                 key={index}
-                                className={`p-4 rounded-lg ${insight.type === 'success'
-                                        ? 'bg-green-50 border-l-4 border-green-500'
-                                        : insight.type === 'warning'
-                                            ? 'bg-yellow-50 border-l-4 border-yellow-500'
-                                            : 'bg-blue-50 border-l-4 border-blue-500'
+                                className={`p-4 rounded-lg border-l-4 ${insight.type === 'success'
+                                    ? 'bg-green-50 border-green-500'
+                                    : insight.type === 'warning'
+                                        ? 'bg-yellow-50 border-yellow-500'
+                                        : 'bg-blue-50 border-blue-500'
                                     }`}
                             >
                                 <p className="text-sm font-medium text-gray-900">{insight.message}</p>
-                                {insight.category && (
-                                    <p className="text-xs text-gray-500 mt-1">Category: {insight.category}</p>
-                                )}
                             </div>
                         ))}
                     </div>
@@ -148,7 +223,6 @@ const DetailedTeachingAnalytics = () => {
 
             {/* Key Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Total Sessions */}
                 <MetricCard
                     icon={BookOpen}
                     label="Total Sessions"
@@ -159,8 +233,6 @@ const DetailedTeachingAnalytics = () => {
                     )}
                     color="indigo"
                 />
-
-                {/* Total Students */}
                 <MetricCard
                     icon={Users}
                     label="Total Students"
@@ -171,8 +243,6 @@ const DetailedTeachingAnalytics = () => {
                     )}
                     color="blue"
                 />
-
-                {/* Average Rating */}
                 <MetricCard
                     icon={Star}
                     label="Average Rating"
@@ -184,8 +254,6 @@ const DetailedTeachingAnalytics = () => {
                     )}
                     color="yellow"
                 />
-
-                {/* Net Earnings */}
                 <MetricCard
                     icon={DollarSign}
                     label="Net Earnings"
@@ -198,267 +266,228 @@ const DetailedTeachingAnalytics = () => {
                 />
             </div>
 
-            {/* Session Metrics */}
-            <div className="bg-white rounded-lg shadow p-6">
+            {/* Session Status Distribution - Pie Chart */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Clock className="w-5 h-5 mr-2 text-indigo-600" />
-                    Session Metrics
+                    <Activity className="w-5 h-5 mr-2 text-indigo-600" />
+                    Session Status Distribution
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Completed</p>
-                        <p className="text-3xl font-bold text-green-600">{current.sessionMetrics?.completed || 0}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                            {((current.sessionMetrics?.completionRate || 0) * 100).toFixed(1)}% completion rate
-                        </p>
-                    </div>
-                    <div className="text-center p-4 bg-red-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Cancelled</p>
-                        <p className="text-3xl font-bold text-red-600">{current.sessionMetrics?.cancelled || 0}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                            {(((current.sessionMetrics?.cancelled || 0) / (current.sessionMetrics?.total || 1)) * 100).toFixed(1)}% of total
-                        </p>
-                    </div>
-                    <div className="text-center p-4 bg-indigo-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Total Hours</p>
-                        <p className="text-3xl font-bold text-indigo-600">{(current.sessionMetrics?.totalHours || 0).toFixed(1)}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                            Avg: {(current.sessionMetrics?.averageDuration || 0).toFixed(0)} min/session
-                        </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                            <Pie
+                                data={sessionStatusData}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                outerRadius={100}
+                                fill="#8884d8"
+                                dataKey="value"
+                                animationBegin={0}
+                                animationDuration={800}
+                            >
+                                {sessionStatusData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                        </PieChart>
+                    </ResponsiveContainer>
+                    <div className="flex flex-col justify-center space-y-4">
+                        <div className="p-4 bg-green-50 rounded-lg">
+                            <p className="text-sm text-gray-600 mb-1">Completed Sessions</p>
+                            <p className="text-3xl font-bold text-green-600">{current.sessionMetrics?.completed || 0}</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                                {((current.sessionMetrics?.completionRate || 0) * 100).toFixed(1)}% completion rate
+                            </p>
+                        </div>
+                        <div className="p-4 bg-indigo-50 rounded-lg">
+                            <p className="text-sm text-gray-600 mb-1">Total Hours Taught</p>
+                            <p className="text-3xl font-bold text-indigo-600">{(current.sessionMetrics?.totalHours || 0).toFixed(1)}</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Avg: {(current.sessionMetrics?.averageDuration || 0).toFixed(0)} min/session
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Student Metrics */}
-            <div className="bg-white rounded-lg shadow p-6">
+            {/* Student Engagement - Bar Chart */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                     <Users className="w-5 h-5 mr-2 text-indigo-600" />
-                    Student Metrics
+                    Student Engagement
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 border rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">New Students</p>
-                        <p className="text-2xl font-bold text-gray-900">{current.studentMetrics?.newStudents || 0}</p>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Returning</p>
-                        <p className="text-2xl font-bold text-gray-900">{current.studentMetrics?.returningStudents || 0}</p>
-                    </div>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={studentMetricsData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis dataKey="name" stroke="#6b7280" />
+                        <YAxis stroke="#6b7280" />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: '#fff',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: '0.5rem',
+                            }}
+                        />
+                        <Bar dataKey="value" fill={COLORS.primary} radius={[8, 8, 0, 0]} animationDuration={800}>
+                            {studentMetricsData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={index === 0 ? COLORS.info : COLORS.success} />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+                <div className="grid grid-cols-2 gap-4 mt-4">
                     <div className="text-center p-4 border rounded-lg">
                         <p className="text-sm text-gray-600 mb-1">Retention Rate</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-2xl font-bold text-indigo-600">
                             {((current.studentMetrics?.retentionRate || 0) * 100).toFixed(1)}%
                         </p>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Satisfaction</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-sm text-gray-600 mb-1">Student Satisfaction</p>
+                        <p className="text-2xl font-bold text-green-600">
                             {(current.studentMetrics?.averageStudentSatisfaction || 0).toFixed(1)}/5.0
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* Rating Breakdown */}
-            <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Star className="w-5 h-5 mr-2 text-indigo-600" />
-                    Rating Breakdown
-                </h3>
-                <div className="space-y-3">
-                    {current.ratings?.categories && Object.entries(current.ratings.categories).map(([category, rating]) => (
-                        <div key={category} className="flex items-center">
-                            <div className="w-32 text-sm font-medium text-gray-700 capitalize">
-                                {category.replace('_', ' ')}
-                            </div>
-                            <div className="flex-1 mx-4">
-                                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all"
-                                        style={{ width: `${(rating / 5) * 100}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="w-16 text-right text-sm font-semibold text-gray-900">
-                                {rating?.toFixed(1)}/5.0
-                            </div>
-                        </div>
-                    ))}
+            {/* Rating Categories - Radar Chart */}
+            {ratingCategoriesData.length > 0 && (
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <Star className="w-5 h-5 mr-2 text-indigo-600" />
+                        Rating Categories Performance
+                    </h3>
+                    <ResponsiveContainer width="100%" height={400}>
+                        <RadarChart data={ratingCategoriesData}>
+                            <PolarGrid stroke="#e5e7eb" />
+                            <PolarAngleAxis dataKey="category" stroke="#6b7280" />
+                            <PolarRadiusAxis angle={90} domain={[0, 5]} stroke="#6b7280" />
+                            <Radar
+                                name="Rating"
+                                dataKey="rating"
+                                stroke={COLORS.primary}
+                                fill={COLORS.primary}
+                                fillOpacity={0.6}
+                                animationDuration={800}
+                            />
+                            <Tooltip />
+                        </RadarChart>
+                    </ResponsiveContainer>
+                    <div className="mt-4 text-center">
+                        <p className="text-sm text-gray-600">Overall Average Rating</p>
+                        <p className="text-3xl font-bold text-yellow-600">
+                            {(current.ratings?.overall?.average || 0).toFixed(2)} / 5.0
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Based on {current.ratings?.overall?.count || 0} ratings
+                        </p>
+                    </div>
                 </div>
-            </div>
+            )}
 
-            {/* Earnings Breakdown */}
-            <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <DollarSign className="w-5 h-5 mr-2 text-indigo-600" />
-                    Earnings Breakdown
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Gross Earnings</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                            ${(current.earnings?.gross || 0).toLocaleString()}
-                        </p>
-                    </div>
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Platform Fees</p>
-                        <p className="text-2xl font-bold text-red-600">
-                            -${(current.earnings?.platformFees || 0).toLocaleString()}
-                        </p>
-                    </div>
-                    <div className="p-4 bg-green-50 rounded-lg">
-                        <p className="text-sm text-gray-600 mb-1">Net Earnings</p>
+            {/* Earnings Comparison - Area Chart */}
+            {previous && (
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <DollarSign className="w-5 h-5 mr-2 text-indigo-600" />
+                        Earnings Comparison
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={earningsComparisonData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                            <XAxis dataKey="name" stroke="#6b7280" />
+                            <YAxis stroke="#6b7280" />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#fff',
+                                    border: '1px solid #e5e7eb',
+                                    borderRadius: '0.5rem',
+                                }}
+                                formatter={(value) => `$${value.toLocaleString()}`}
+                            />
+                            <Legend />
+                            <Bar dataKey="gross" fill={COLORS.info} name="Gross" radius={[8, 8, 0, 0]} />
+                            <Bar dataKey="fees" fill={COLORS.danger} name="Fees" radius={[8, 8, 0, 0]} />
+                            <Bar dataKey="net" fill={COLORS.success} name="Net" radius={[8, 8, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                    <div className="mt-4 text-center p-4 bg-green-50 rounded-lg">
+                        <p className="text-sm text-gray-600">Average Hourly Rate</p>
                         <p className="text-2xl font-bold text-green-600">
-                            ${(current.earnings?.net || 0).toLocaleString()}
+                            ${(current.earnings?.averageHourlyRate || 0).toFixed(2)}/hour
                         </p>
                     </div>
                 </div>
-                <div className="mt-4 p-4 border-t">
-                    <p className="text-sm text-gray-600">Average Hourly Rate</p>
-                    <p className="text-xl font-bold text-gray-900">
-                        ${(current.earnings?.averageHourlyRate || 0).toFixed(2)}/hour
-                    </p>
-                </div>
-            </div>
+            )}
 
-            {/* Quality Metrics */}
-            {current.qualityMetrics && (
-                <div className="bg-white rounded-lg shadow p-6">
+            {/* Quality Metrics - Radar Chart */}
+            {qualityMetricsRadarData.length > 0 && (
+                <div className="bg-white rounded-xl shadow-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <Award className="w-5 h-5 mr-2 text-indigo-600" />
                         Quality Metrics
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <QualityScore label="Preparation" score={current.qualityMetrics.preparationScore} />
-                        <QualityScore label="Consistency" score={current.qualityMetrics.consistencyScore} />
-                        <QualityScore label="Professionalism" score={current.qualityMetrics.professionalismScore} />
-                        <QualityScore label="Overall Quality" score={current.qualityMetrics.overallQualityScore} />
-                    </div>
-                </div>
-            )}
-
-            {/* Skill Performance */}
-            {current.skillPerformance && current.skillPerformance.length > 0 && (
-                <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <Target className="w-5 h-5 mr-2 text-indigo-600" />
-                        Skill Performance
-                    </h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b">
-                                    <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Skill</th>
-                                    <th className="text-center py-2 px-4 text-sm font-medium text-gray-700">Sessions</th>
-                                    <th className="text-center py-2 px-4 text-sm font-medium text-gray-700">Hours</th>
-                                    <th className="text-center py-2 px-4 text-sm font-medium text-gray-700">Rating</th>
-                                    <th className="text-center py-2 px-4 text-sm font-medium text-gray-700">Students</th>
-                                    <th className="text-right py-2 px-4 text-sm font-medium text-gray-700">Earnings</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {current.skillPerformance.map((skill, index) => (
-                                    <tr key={index} className="border-b hover:bg-gray-50">
-                                        <td className="py-3 px-4 text-sm font-medium text-gray-900">
-                                            {skill.skill?.name || 'Unknown Skill'}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm text-center text-gray-600">
-                                            {skill.sessionsCount}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm text-center text-gray-600">
-                                            {skill.hoursTeaching?.toFixed(1)}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm text-center">
-                                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                ⭐ {skill.averageRating?.toFixed(1)}
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-4 text-sm text-center text-gray-600">
-                                            {skill.studentsCount}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm text-right font-semibold text-gray-900">
-                                            ${skill.earnings?.toLocaleString()}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <ResponsiveContainer width="100%" height={350}>
+                        <RadarChart data={qualityMetricsRadarData}>
+                            <PolarGrid stroke="#e5e7eb" />
+                            <PolarAngleAxis dataKey="metric" stroke="#6b7280" />
+                            <PolarRadiusAxis angle={90} domain={[0, 10]} stroke="#6b7280" />
+                            <Radar
+                                name="Score"
+                                dataKey="score"
+                                stroke={COLORS.purple}
+                                fill={COLORS.purple}
+                                fillOpacity={0.6}
+                                animationDuration={800}
+                            />
+                            <Tooltip />
+                        </RadarChart>
+                    </ResponsiveContainer>
                 </div>
             )}
         </div>
     );
 };
 
-// Metric Card Component
+// Metric Card Component with Enhanced Design
 const MetricCard = ({ icon: Icon, label, value, suffix = '', change, color = 'indigo' }) => {
     const colors = {
-        indigo: 'from-indigo-500 to-indigo-600',
-        blue: 'from-blue-500 to-blue-600',
-        green: 'from-green-500 to-green-600',
-        yellow: 'from-yellow-500 to-yellow-600',
+        indigo: {
+            gradient: 'from-indigo-500 to-indigo-600',
+            bg: 'bg-indigo-50',
+            border: 'border-indigo-200',
+        },
+        blue: {
+            gradient: 'from-blue-500 to-blue-600',
+            bg: 'bg-blue-50',
+            border: 'border-blue-200',
+        },
+        green: {
+            gradient: 'from-green-500 to-green-600',
+            bg: 'bg-green-50',
+            border: 'border-green-200',
+        },
+        yellow: {
+            gradient: 'from-yellow-500 to-yellow-600',
+            bg: 'bg-yellow-50',
+            border: 'border-yellow-200',
+        },
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
-            <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${colors[color]} mb-4`}>
+        <div className={`bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border-l-4 ${colors[color].border}`}>
+            <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${colors[color].gradient} mb-4 shadow-md`}>
                 <Icon className="w-6 h-6 text-white" />
             </div>
-            <p className="text-sm text-gray-600 mb-1">{label}</p>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-sm text-gray-600 mb-2 font-medium">{label}</p>
+            <p className="text-3xl font-bold text-gray-900 mb-2">
                 {value}{suffix}
             </p>
-            {change && <div className="mt-2 text-sm font-medium">{change}</div>}
-        </div>
-    );
-};
-
-// Quality Score Component
-const QualityScore = ({ label, score }) => {
-    const percentage = (score / 10) * 100;
-    const color = score >= 8 ? 'green' : score >= 6 ? 'yellow' : 'red';
-    const colorClasses = {
-        green: 'from-green-400 to-green-600',
-        yellow: 'from-yellow-400 to-yellow-600',
-        red: 'from-red-400 to-red-600',
-    };
-
-    return (
-        <div className="text-center p-4 border rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">{label}</p>
-            <div className="relative w-24 h-24 mx-auto mb-2">
-                <svg className="transform -rotate-90 w-24 h-24">
-                    <circle
-                        cx="48"
-                        cy="48"
-                        r="40"
-                        stroke="currentColor"
-                        strokeWidth="8"
-                        fill="transparent"
-                        className="text-gray-200"
-                    />
-                    <circle
-                        cx="48"
-                        cy="48"
-                        r="40"
-                        stroke="url(#gradient)"
-                        strokeWidth="8"
-                        fill="transparent"
-                        strokeDasharray={`${percentage * 2.51} 251`}
-                        className="transition-all duration-500"
-                    />
-                    <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" className={`stop-color-${color}-400`} />
-                            <stop offset="100%" className={`stop-color-${color}-600`} />
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-gray-900">{score?.toFixed(1)}</span>
-                </div>
-            </div>
-            <p className="text-xs text-gray-500">out of 10</p>
+            {change && <div className="text-sm font-medium">{change}</div>}
         </div>
     );
 };
