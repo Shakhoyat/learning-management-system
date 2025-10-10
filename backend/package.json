@@ -7,7 +7,9 @@
     "scripts": {
         "start": "node src/server.js",
         "dev": "nodemon src/server.js",
-        "db:seed": "node src/utils/seeder.js"
+        "db:seed": "node src/utils/seeder.js",
+        "db:seed-analytics": "node seed-analytics.js",
+        "db:fix-indexes": "node fix-db-indexes.js"
     },
     "keywords": [
         "learning-management-system",

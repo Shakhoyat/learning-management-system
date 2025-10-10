@@ -22,6 +22,7 @@ const matchingRoutes = require("./routes/matching");
 const sessionRoutes = require("./routes/sessions");
 const paymentRoutes = require("./routes/payments");
 const notificationRoutes = require("./routes/notifications");
+const analyticsRoutes = require("./routes/analytics");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -78,6 +79,7 @@ app.get("/health", (req, res) => {
       sessions: "active",
       payments: "active",
       notifications: "active",
+      analytics: "active",
     },
   });
 });
@@ -90,6 +92,7 @@ app.use("/api/matching", matchingRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // 404 handler
 app.all("*", (req, res) => {
@@ -132,6 +135,7 @@ async function startServer() {
       logger.info("   - GET  /api/sessions/*");
       logger.info("   - POST /api/payments/*");
       logger.info("   - GET  /api/notifications/*");
+      logger.info("   - GET  /api/analytics/*");
     });
 
     // Graceful shutdown handlers

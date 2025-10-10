@@ -7,6 +7,54 @@ export const analyticsService = {
     return response.analytics;
   },
 
+  // Get teaching analytics (for tutors)
+  getTeachingAnalytics: async (params = {}) => {
+    const response = await api.get("/analytics/teaching", { params });
+    return response.analytics;
+  },
+
+  // Get learning analytics (for learners)
+  getLearningAnalytics: async (params = {}) => {
+    const response = await api.get("/analytics/learning", { params });
+    return response.analytics;
+  },
+
+  // Get analytics overview (auto-detects role)
+  getAnalyticsOverview: async (params = {}) => {
+    const response = await api.get("/analytics/overview", { params });
+    return response.analytics;
+  },
+
+  // Get analytics history
+  getAnalyticsHistory: async (params = {}) => {
+    const response = await api.get("/analytics/history", { params });
+    return response.history;
+  },
+
+  // Get assessment analytics
+  getAssessmentAnalytics: async (params = {}) => {
+    const response = await api.get("/analytics/assessments", { params });
+    return response.assessmentAnalytics;
+  },
+
+  // Generate report
+  generateReport: async (data) => {
+    const response = await api.post("/analytics/reports", data);
+    return response.report;
+  },
+
+  // Get reports
+  getReports: async (params = {}) => {
+    const response = await api.get("/analytics/reports", { params });
+    return response.reports;
+  },
+
+  // Get report by ID
+  getReportById: async (reportId) => {
+    const response = await api.get(`/analytics/reports/${reportId}`);
+    return response.report;
+  },
+
   // Get learning progress
   getLearningProgress: async () => {
     const response = await api.get("/users/me/progress");
