@@ -1,0 +1,637 @@
+// Learning Management System - Database Schema
+// Use this file at https://dbdiagram.io/
+
+Project LMS {
+  database_type: 'MongoDB'
+  Note: 'Learning Management System - Complete Database Schema'
+}
+
+// ============================================
+// CORE ENTITIES
+// ============================================
+
+Table users {
+  _id ObjectId [pk]
+  name String [not null]
+  email String [unique, not null]
+  avatar String
+  bio String
+  timezone String [default: 'UTC']
+  languages String[]
+  
+  // Location
+  location_country String
+  location_city String
+  location_latitude Number
+  location_longitude Number
+  
+  // Role & Auth
+  role String [note: 'admin, tutor, learner']
+  auth_passwordHash String [not null]
+  auth_emailVerified Boolean [default: false]
+  auth_emailVerificationToken String
+  auth_passwordResetToken String
+  auth_passwordResetExpires Date
+  auth_lastLogin Date
+  auth_isActive Boolean [default: true]
+  
+  // Tutor Info
+  hourlyRate Number
+  availability Object
+  rating_average Number
+  rating_count Number
+  rating_distribution Object
+  
+  // Statistics
+  stats_totalSessions Number
+  stats_completedSessions Number
+  stats_totalEarnings Number
+  stats_totalSpent Number
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Note: 'Core user entity - supports admin, tutor, and learner roles'
+}
+
+Table skills {
+  _id ObjectId [pk]
+  name String [unique, not null]
+  description String [not null]
+  category String [not null]
+  subcategory String
+  keywords String[]
+  
+  // Learning Metadata
+  difficulty Number [note: '1-10']
+  averageLearningHours Number
+  estimatedSessionCount Number
+  certificationAvailable Boolean
+  
+  // Engagement
+  popularity_score Number
+  trending_score Number
+  demand_score Number
+  
+  // Statistics
+  stats_totalTutors Number
+  stats_totalLearners Number
+  stats_totalSessions Number
+  stats_averageRating Number
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Note: 'Skills catalog with difficulty levels and prerequisites'
+}
+
+Table sessions {
+  _id ObjectId [pk]
+  tutor ObjectId [ref: > users._id, not null]
+  learner ObjectId [ref: > users._id, not null]
+  skill ObjectId [ref: > skills._id, not null]
+  
+  title String [not null]
+  description String
+  
+  // Scheduling
+  scheduledDate Date [not null]
+  duration Number [note: 'minutes']
+  timezone String [default: 'UTC']
+  
+  // Status
+  status String [note: 'scheduled, in_progress, completed, cancelled, no_show']
+  
+  // Meeting
+  meetingDetails_platform String
+  meetingDetails_meetingUrl String
+  meetingDetails_meetingId String
+  meetingDetails_passcode String
+  
+  // Timing
+  actualStartTime Date
+  actualEndTime Date
+  actualDuration Number
+  
+  // Pricing
+  pricing_hourlyRate Number
+  pricing_totalAmount Number
+  pricing_currency String [default: 'USD']
+  pricing_platformFee Number
+  pricing_tutorEarnings Number
+  
+  // Ratings
+  tutorRating_score Number
+  tutorRating_review String
+  tutorRating_ratedAt Date
+  learnerRating_score Number
+  learnerRating_review String
+  learnerRating_ratedAt Date
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (tutor, status)
+    (learner, status)
+    (skill, status)
+    scheduledDate
+  }
+  
+  Note: 'Learning sessions between tutors and learners'
+}
+
+Table payments {
+  _id ObjectId [pk]
+  paymentId String [unique, not null]
+  transactionId String [unique]
+  
+  session ObjectId [ref: > sessions._id, not null]
+  payer ObjectId [ref: > users._id, not null]
+  recipient ObjectId [ref: > users._id, not null]
+  
+  // Payment Details
+  amount Number [not null]
+  currency String [default: 'USD']
+  
+  // Payment Method
+  paymentMethod_type String [note: 'card, bank_transfer, paypal, stripe, wallet']
+  paymentMethod_last4 String
+  paymentMethod_brand String
+  
+  // Status
+  status String [note: 'pending, processing, completed, failed, refunded, cancelled']
+  
+  // Fees
+  platformFee Number
+  processingFee Number
+  netAmount Number
+  
+  // Timing
+  initiatedAt Date
+  completedAt Date
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (payer, status)
+    (recipient, status)
+    session
+    paymentId
+  }
+  
+  Note: 'Payment transactions for sessions'
+}
+
+Table notifications {
+  _id ObjectId [pk]
+  recipient ObjectId [ref: > users._id, not null]
+  sender ObjectId [ref: > users._id]
+  
+  type String [note: 'session_reminder, payment_received, etc.']
+  title String [not null]
+  message String [not null]
+  
+  priority String [note: 'low, normal, high, urgent']
+  category String [note: 'session, payment, message, system, achievement']
+  
+  // Status
+  read Boolean [default: false]
+  dismissed Boolean [default: false]
+  readAt Date
+  dismissedAt Date
+  
+  // Delivery
+  channels String[] [note: 'email, push, sms, in_app']
+  deliveryStatus Object
+  
+  // Action
+  action_type String
+  action_url String
+  action_performed Boolean
+  action_performedAt Date
+  
+  expiresAt Date
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (recipient, read)
+    (recipient, createdAt)
+  }
+  
+  Note: 'User notifications across multiple channels'
+}
+
+Table assessments {
+  _id ObjectId [pk]
+  title String [not null]
+  description String
+  type String [note: 'quiz, test, assignment, practice, evaluation']
+  
+  skill ObjectId [ref: > skills._id, not null]
+  session ObjectId [ref: > sessions._id]
+  createdBy ObjectId [ref: > users._id, not null]
+  
+  // Configuration
+  config_difficulty String [note: 'beginner, intermediate, advanced, expert']
+  config_timeLimit Number [note: 'minutes']
+  config_passingScore Number [default: 70]
+  config_attemptsAllowed Number [default: 1]
+  config_shuffleQuestions Boolean
+  
+  // Questions (embedded)
+  questions Object[]
+  
+  // Statistics
+  stats_totalAttempts Number
+  stats_averageScore Number
+  stats_passRate Number
+  
+  isActive Boolean [default: true]
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    skill
+    createdBy
+    session
+  }
+  
+  Note: 'Quizzes, tests, and assignments for skill assessment'
+}
+
+Table assessment_attempts {
+  _id ObjectId [pk]
+  assessment ObjectId [ref: > assessments._id, not null]
+  student ObjectId [ref: > users._id, not null]
+  session ObjectId [ref: > sessions._id]
+  
+  attemptNumber Number
+  
+  // Responses (embedded)
+  responses Object[]
+  
+  // Scoring
+  score Number
+  maxScore Number
+  percentage Number
+  grade String
+  passed Boolean
+  
+  // Timing
+  startedAt Date
+  submittedAt Date
+  duration Number [note: 'seconds']
+  
+  // AI Analysis
+  aiAnalysis_strengths String[]
+  aiAnalysis_weaknesses String[]
+  aiAnalysis_recommendations String[]
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (assessment, student)
+    student
+    (student, submittedAt)
+  }
+  
+  Note: 'Individual attempts at assessments by students'
+}
+
+// ============================================
+// ANALYTICS & REPORTING
+// ============================================
+
+Table teaching_analytics {
+  _id ObjectId [pk]
+  tutor ObjectId [ref: > users._id, not null]
+  
+  // Time Period
+  period_type String [note: 'daily, weekly, monthly, quarterly, yearly']
+  period_startDate Date [not null]
+  period_endDate Date [not null]
+  period_year Number
+  period_month Number
+  period_week Number
+  
+  // Session Metrics
+  sessionMetrics_total Number
+  sessionMetrics_completed Number
+  sessionMetrics_cancelled Number
+  sessionMetrics_completionRate Number
+  sessionMetrics_totalHours Number
+  
+  // Student Metrics
+  studentMetrics_totalStudents Number
+  studentMetrics_newStudents Number
+  studentMetrics_returningStudents Number
+  studentMetrics_retentionRate Number
+  
+  // Performance
+  performance_averageRating Number
+  performance_averageStudentProgress Number
+  
+  // Earnings
+  earnings_totalRevenue Number
+  earnings_platformFees Number
+  earnings_netEarnings Number
+  earnings_averagePerSession Number
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (tutor, period_type, period_startDate)
+    tutor
+  }
+  
+  Note: 'Aggregated analytics for tutors'
+}
+
+Table learning_analytics {
+  _id ObjectId [pk]
+  learner ObjectId [ref: > users._id, not null]
+  
+  // Time Period
+  period_type String [note: 'daily, weekly, monthly, quarterly, yearly']
+  period_startDate Date [not null]
+  period_endDate Date [not null]
+  period_year Number
+  period_month Number
+  
+  // Session Metrics
+  sessionMetrics_total Number
+  sessionMetrics_completed Number
+  sessionMetrics_completionRate Number
+  sessionMetrics_totalHours Number
+  
+  // Progress
+  learningProgress_skillsInProgress Number
+  learningProgress_skillsCompleted Number
+  learningProgress_overallProgress Number
+  learningProgress_averageScore Number
+  
+  // Engagement
+  engagement_studyStreak Number
+  engagement_longestStreak Number
+  engagement_totalStudyTime Number
+  
+  // Spending
+  spending_totalSpent Number
+  spending_averagePerSession Number
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (learner, period_type, period_startDate)
+    learner
+  }
+  
+  Note: 'Aggregated analytics for learners'
+}
+
+Table student_engagement {
+  _id ObjectId [pk]
+  student ObjectId [ref: > users._id, not null]
+  tutor ObjectId [ref: > users._id, not null]
+  
+  activityDate Date [not null]
+  dayOfWeek Number [note: '0-6 (Sun-Sat)']
+  hourOfDay Number [note: '0-23']
+  
+  // Activities
+  activities_sessionAttended Boolean
+  activities_assignmentSubmitted Boolean
+  activities_assessmentCompleted Boolean
+  activities_messagesSent Number
+  activities_materialsViewed Number
+  
+  // Duration
+  durationMinutes Number
+  
+  // Engagement Score
+  engagementScore Number [note: '0-100']
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (tutor, activityDate)
+    (student, activityDate)
+    (tutor, dayOfWeek, hourOfDay)
+  }
+  
+  Note: 'Tracks student activity patterns for heatmap visualization'
+}
+
+Table student_performance {
+  _id ObjectId [pk]
+  student ObjectId [ref: > users._id, not null]
+  tutor ObjectId [ref: > users._id, not null]
+  assessment ObjectId [ref: > assessments._id]
+  skill ObjectId [ref: > skills._id, not null]
+  
+  recordDate Date [not null]
+  academicPeriod String [note: 'weekly, monthly, quarterly, semester, yearly']
+  
+  // Score
+  score_value Number [note: '0-100']
+  score_grade String [note: 'A+, A, A-, B+, B, B-, C+, C, C-, D, F']
+  score_percentile Number
+  
+  // Performance
+  isOutlier Boolean
+  trend String [note: 'improving, stable, declining']
+  
+  category String [note: 'overall, quiz, test, assignment']
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (tutor, recordDate)
+    (student, recordDate)
+    (tutor, score_value)
+  }
+  
+  Note: 'Tracks student scores for distribution analysis'
+}
+
+Table attendance_assignment {
+  _id ObjectId [pk]
+  student ObjectId [ref: > users._id, not null]
+  tutor ObjectId [ref: > users._id, not null]
+  
+  date Date [not null]
+  year Number
+  month Number [note: '1-12']
+  day Number [note: '1-31']
+  dayOfWeek Number [note: '0-6']
+  weekOfYear Number
+  
+  // Attendance
+  attendance_present Boolean
+  attendance_late Boolean
+  attendance_excused Boolean
+  attendance_punctuality String [note: 'on_time, late, absent']
+  
+  // Assignments
+  dailyMetrics_assignmentsSubmitted Number
+  dailyMetrics_assignmentsDue Number
+  dailyMetrics_submissionRate Number
+  
+  // Consistency Score
+  dailyMetrics_consistencyScore Number [note: '0-100']
+  
+  // Streak
+  streakData_currentStreak Number
+  streakData_longestStreak Number
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    (tutor, date) [unique]
+    (student, date)
+    (tutor, year, month)
+  }
+  
+  Note: 'Tracks attendance and assignments for calendar heatmap'
+}
+
+Table analytics_reports {
+  _id ObjectId [pk]
+  reportId String [unique, not null]
+  title String [not null]
+  description String
+  
+  type String [note: 'teaching_performance, learning_progress, financial, etc.']
+  
+  // Scope
+  scope_type String [note: 'individual, skill, category, platform']
+  scope_targetUser ObjectId [ref: > users._id]
+  scope_targetSkill ObjectId [ref: > skills._id]
+  
+  // Period
+  period_type String
+  period_startDate Date [not null]
+  period_endDate Date [not null]
+  
+  // Data (embedded)
+  data Object
+  
+  // Metadata
+  generatedBy ObjectId [ref: > users._id, not null]
+  format String [note: 'json, pdf, csv, excel']
+  status String [note: 'pending, generating, completed, failed']
+  
+  // Sharing
+  visibility String [note: 'private, shared, public']
+  sharedWith ObjectId[]
+  
+  expiresAt Date
+  
+  createdAt Timestamp
+  updatedAt Timestamp
+  
+  Indexes {
+    reportId
+    generatedBy
+    (scope_targetUser, type)
+  }
+  
+  Note: 'Generated analytics reports with various formats'
+}
+
+// ============================================
+// EMBEDDED RELATIONSHIPS
+// ============================================
+
+// User -> Skills (Many-to-Many via embedded arrays)
+Table user_teaching_skills {
+  user_id ObjectId [ref: > users._id]
+  skill_id ObjectId [ref: > skills._id]
+  level Number [note: '1-10']
+  yearsOfExperience Number
+  certificationsEarned String[]
+  verified Boolean
+  
+  Note: 'Embedded in users.teachingSkills[]'
+}
+
+Table user_learning_skills {
+  user_id ObjectId [ref: > users._id]
+  skill_id ObjectId [ref: > skills._id]
+  currentLevel Number [note: '1-10']
+  targetLevel Number [note: '1-10']
+  priority String [note: 'high, medium, low']
+  
+  Note: 'Embedded in users.learningSkills[]'
+}
+
+// Skill Prerequisites (Many-to-Many via embedded arrays)
+Table skill_prerequisites {
+  parent_skill_id ObjectId [ref: > skills._id]
+  prerequisite_skill_id ObjectId [ref: > skills._id]
+  required Boolean
+  minimumLevel Number [note: '1-10']
+  
+  Note: 'Embedded in skills.prerequisites[]'
+}
+
+Table skill_related {
+  skill_id ObjectId [ref: > skills._id]
+  related_skill_id ObjectId [ref: > skills._id]
+  relationshipType String [note: 'similar, complementary, advanced, foundational']
+  strength Number [note: '1-10']
+  
+  Note: 'Embedded in skills.relatedSkills[]'
+}
+
+// ============================================
+// KEY RELATIONSHIPS
+// ============================================
+
+// User Relationships
+Ref: sessions.tutor > users._id
+Ref: sessions.learner > users._id
+Ref: payments.payer > users._id
+Ref: payments.recipient > users._id
+Ref: notifications.recipient > users._id
+Ref: notifications.sender > users._id
+Ref: assessments.createdBy > users._id
+Ref: assessment_attempts.student > users._id
+
+// Skill Relationships
+Ref: sessions.skill > skills._id
+Ref: assessments.skill > skills._id
+Ref: student_performance.skill > skills._id
+
+// Session Relationships
+Ref: payments.session > sessions._id
+Ref: assessments.session > sessions._id
+Ref: assessment_attempts.session > sessions._id
+
+// Assessment Relationships
+Ref: assessment_attempts.assessment > assessments._id
+
+// Analytics Relationships
+Ref: teaching_analytics.tutor > users._id
+Ref: learning_analytics.learner > users._id
+Ref: student_engagement.student > users._id
+Ref: student_engagement.tutor > users._id
+Ref: student_performance.student > users._id
+Ref: student_performance.tutor > users._id
+Ref: student_performance.assessment > assessments._id
+Ref: attendance_assignment.student > users._id
+Ref: attendance_assignment.tutor > users._id
+Ref: analytics_reports.generatedBy > users._id
+Ref: analytics_reports.scope_targetUser > users._id
+Ref: analytics_reports.scope_targetSkill > skills._id
