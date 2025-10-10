@@ -243,6 +243,10 @@ const UserSchema = new mongoose.Schema(
         type: Boolean,
         default: true,
       },
+      showInLeaderboard: {
+        type: Boolean,
+        default: true,
+      },
     },
   },
   {
@@ -268,6 +272,12 @@ UserSchema.index({ "learningSkills.skillId": 1 });
 UserSchema.index({ "reputation.score": -1 });
 UserSchema.index({ role: 1 });
 UserSchema.index({ "location.coordinates": "2dsphere" });
+
+// Leaderboard optimization indexes
+UserSchema.index({ role: 1, "reputation.learningStats.totalHours": -1 });
+UserSchema.index({ role: 1, "reputation.learningStats.skillsLearned": -1 });
+UserSchema.index({ role: 1, "privacySettings.showInLeaderboard": 1 });
+UserSchema.index({ "learningSkills.skillId": 1, role: 1 }); // For category-based leaderboards
 
 // Pre-save middleware to hash password is handled in the auth service
 

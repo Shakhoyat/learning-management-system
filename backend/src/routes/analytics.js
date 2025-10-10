@@ -67,4 +67,44 @@ router.get(
   analyticsController.getReportById
 );
 
+/**
+ * @route   GET /api/analytics/leaderboard
+ * @desc    Get leaderboard with peer comparison and rankings
+ * @access  Private
+ */
+router.get("/leaderboard", authenticate, analyticsController.getLeaderboard);
+
+/**
+ * @route   GET /api/analytics/teaching/engagement-heatmap
+ * @desc    Get student engagement activity heatmap (day vs. time)
+ * @access  Private (Tutors only)
+ */
+router.get(
+  "/teaching/engagement-heatmap",
+  authenticate,
+  analyticsController.getEngagementHeatmap
+);
+
+/**
+ * @route   GET /api/analytics/teaching/score-distribution
+ * @desc    Get student score distribution histogram
+ * @access  Private (Tutors only)
+ */
+router.get(
+  "/teaching/score-distribution",
+  authenticate,
+  analyticsController.getScoreDistribution
+);
+
+/**
+ * @route   GET /api/analytics/teaching/calendar-heatmap
+ * @desc    Get attendance and assignment calendar heatmap
+ * @access  Private (Tutors only)
+ */
+router.get(
+  "/teaching/calendar-heatmap",
+  authenticate,
+  analyticsController.getCalendarHeatmap
+);
+
 module.exports = router;

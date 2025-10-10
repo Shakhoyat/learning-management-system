@@ -482,6 +482,7 @@ const LearningAnalyticsSchema = new mongoose.Schema(
 );
 
 // Compound Indexes
+// Indexes for efficient queries
 LearningAnalyticsSchema.index({ learner: 1, "period.startDate": -1 });
 LearningAnalyticsSchema.index({
   learner: 1,
@@ -491,6 +492,13 @@ LearningAnalyticsSchema.index({
 LearningAnalyticsSchema.index({ "period.startDate": 1, "period.endDate": 1 });
 LearningAnalyticsSchema.index({ "performance.overallPerformance": -1 });
 LearningAnalyticsSchema.index({ "learningProgress.averageProgress": -1 });
+
+// Leaderboard optimization indexes
+LearningAnalyticsSchema.index({ "gamification.totalPoints": -1 });
+LearningAnalyticsSchema.index({ "gamification.currentLevel": -1 });
+LearningAnalyticsSchema.index({ "sessionMetrics.totalHours": -1 });
+LearningAnalyticsSchema.index({ "learningProgress.skillsCompleted": -1 });
+LearningAnalyticsSchema.index({ learner: 1, "gamification.totalPoints": -1 }); // Compound for user ranking
 
 // Virtual for overall learning score
 LearningAnalyticsSchema.virtual("learningScore").get(function () {

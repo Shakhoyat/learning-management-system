@@ -55,6 +55,12 @@ export const analyticsService = {
     return response.report;
   },
 
+  // Get leaderboard with peer comparison
+  getLeaderboard: async (params = {}) => {
+    const response = await api.get("/analytics/leaderboard", { params });
+    return response.leaderboard;
+  },
+
   // Get learning progress
   getLearningProgress: async () => {
     const response = await api.get("/users/me/progress");
@@ -83,5 +89,29 @@ export const analyticsService = {
   getSkillStats: async (skillId) => {
     const response = await api.get(`/skills/${skillId}/stats`);
     return response.stats;
+  },
+
+  // Get engagement heatmap (Activity Heatmap: Day vs. Time)
+  getEngagementHeatmap: async (params = {}) => {
+    const response = await api.get("/analytics/teaching/engagement-heatmap", {
+      params,
+    });
+    return response;
+  },
+
+  // Get score distribution histogram
+  getScoreDistribution: async (params = {}) => {
+    const response = await api.get("/analytics/teaching/score-distribution", {
+      params,
+    });
+    return response;
+  },
+
+  // Get calendar heatmap (Attendance & Assignments)
+  getCalendarHeatmap: async (params = {}) => {
+    const response = await api.get("/analytics/teaching/calendar-heatmap", {
+      params,
+    });
+    return response;
   },
 };

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { analyticsService } from '../../services/analytics';
 import toast from 'react-hot-toast';
+import ActivityHeatmap from './ActivityHeatmap';
+import ScoreDistributionChart from './ScoreDistributionChart';
+import CalendarHeatmapChart from './CalendarHeatmapChart';
 import {
     TrendingUp,
     Users,
@@ -689,6 +692,32 @@ const DetailedTeachingAnalytics = () => {
                     </ResponsiveContainer>
                 </div>
             )}
+
+            {/* NEW: Advanced Visualizations Section */}
+            <div className="col-span-full bg-gradient-to-r from-purple-600 to-pink-600 p-6 rounded-xl shadow-lg mt-8">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <BarChart3 className="w-7 h-7" />
+                    Advanced Visual Analytics
+                </h2>
+                <p className="text-sm text-purple-100 mt-1">
+                    Interactive heatmaps and distribution charts for deeper insights
+                </p>
+            </div>
+
+            {/* Activity Heatmap */}
+            <div className="col-span-full">
+                <ActivityHeatmap />
+            </div>
+
+            {/* Score Distribution */}
+            <div className="col-span-full">
+                <ScoreDistributionChart />
+            </div>
+
+            {/* Calendar Heatmap */}
+            <div className="col-span-full">
+                <CalendarHeatmapChart />
+            </div>
         </div>
     );
 };
