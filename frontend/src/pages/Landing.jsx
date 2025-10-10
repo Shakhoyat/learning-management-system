@@ -342,35 +342,6 @@ const Landing = () => {
                         >
                             What is EduVerse LMS?
                         </motion.p>
-                        <motion.h2
-                            className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-900 mb-6 leading-tight"
-                            variants={fadeInUp}
-                        >
-                            Data-driven insights. Human-centered learning.
-                        </motion.h2>
-                        <motion.p
-                            className="text-2xl md:text-3xl font-semibold text-gray-800 mb-8 leading-relaxed"
-                            variants={fadeInUp}
-                        >
-                            Empower your educators. Engage your learners.
-                        </motion.p>
-                        <motion.blockquote
-                            className="border-l-4 border-blue-600 pl-6 mb-6"
-                            variants={fadeInUp}
-                        >
-                            <p className="text-lg md:text-xl text-gray-700 italic mb-3 leading-relaxed">
-                                "Technology will not replace great teachers, but technology in the hands of great teachers can be transformational."
-                            </p>
-                            <cite className="text-base text-gray-600 font-medium not-italic">
-                                — George Couros
-                            </cite>
-                        </motion.blockquote>
-                        <motion.p
-                            className="text-xl md:text-2xl font-medium text-gray-900 mb-8 leading-relaxed"
-                            variants={fadeInUp}
-                        >
-                            Shape the future of education with EduVerse LMS.
-                        </motion.p>
 
                         {/* Why Choose EduVerse */}
                         <motion.div
