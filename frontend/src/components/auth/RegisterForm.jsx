@@ -10,7 +10,12 @@ import toast from 'react-hot-toast';
 const registerSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
+    password: z.string()
+        .min(8, 'Password must be at least 8 characters long')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .regex(/[0-9]/, 'Password must contain at least one number')
+        .regex(/[^a-zA-Z0-9]/, 'Password must contain at least one special character'),
     confirmPassword: z.string(),
     role: z.enum(['tutor', 'learner']),
     bio: z.string().optional()
@@ -18,6 +23,39 @@ const registerSchema = z.object({
     message: "Passwords don't match",
     path: ["confirmPassword"],
 });
+
+const PasswordStrengthIndicator = ({ password }) => {
+    const getStrength = () => {
+        let score = 0;
+        if (!password) return score;
+
+        if (password.length >= 8) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+        return score;
+    };
+
+    const strength = getStrength();
+    const width = (strength / 5) * 100;
+    const color =
+        strength <= 2
+            ? 'bg-red-500'
+            : strength <= 4
+                ? 'bg-yellow-500'
+                : 'bg-green-500';
+
+    return (
+        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+            <div
+                className={`h-2 rounded-full transition-all duration-300 ${color}`}
+                style={{ width: `${width}%` }}
+            ></div>
+        </div>
+    );
+};
 
 const RegisterForm = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -82,8 +120,8 @@ const RegisterForm = () => {
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                             <label className={`cursor-pointer rounded-lg border-2 p-4 text-center transition-colors ${selectedRole === 'learner'
-                                    ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
-                                    : 'border-gray-300 hover:border-gray-400'
+                                ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                                : 'border-gray-300 hover:border-gray-400'
                                 }`}>
                                 <input
                                     {...register('role')}
@@ -95,8 +133,8 @@ const RegisterForm = () => {
                                 <div className="text-sm text-gray-500 mt-1">Find tutors and learn new skills</div>
                             </label>
                             <label className={`cursor-pointer rounded-lg border-2 p-4 text-center transition-colors ${selectedRole === 'tutor'
-                                    ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
-                                    : 'border-gray-300 hover:border-gray-400'
+                                ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                                : 'border-gray-300 hover:border-gray-400'
                                 }`}>
                                 <input
                                     {...register('role')}
@@ -170,9 +208,11 @@ const RegisterForm = () => {
                                     )}
                                 </button>
                             </div>
+                            <PasswordStrengthIndicator password={watch('password')} />
                             {errors.password && (
                                 <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
                             )}
+                            <PasswordStrengthIndicator password={watch('password')} />
                         </div>
 
                         <div>
