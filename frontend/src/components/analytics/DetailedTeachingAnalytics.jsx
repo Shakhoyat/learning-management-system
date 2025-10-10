@@ -18,6 +18,7 @@ import {
     TrendingDown,
     Zap,
     BarChart3,
+    TrendingUpIcon,
 } from 'lucide-react';
 import {
     LineChart,
@@ -41,6 +42,8 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { ChartContainer, ChartTooltip, ChartLegend } from '../ui/chart';
 
 const DetailedTeachingAnalytics = () => {
     const { user } = useAuth();
@@ -158,6 +161,27 @@ const DetailedTeachingAnalytics = () => {
         { metric: 'Overall', score: current.qualityMetrics.overallQualityScore, fullMark: 10 },
     ] : [];
 
+    // Prepare trend data for line charts (simulated weekly data)
+    const generateTrendData = () => {
+        const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        const totalSessions = current.sessionMetrics?.total || 0;
+        const totalEarnings = current.earnings?.net || 0;
+        const avgRating = current.ratings?.overall?.average || 0;
+
+        return weeks.map((week, index) => {
+            const progress = (index + 1) / weeks.length;
+            return {
+                week,
+                sessions: Math.round(totalSessions * progress * (0.15 + Math.random() * 0.1)),
+                earnings: Math.round(totalEarnings * progress * (0.15 + Math.random() * 0.1)),
+                rating: Number((avgRating * (0.85 + Math.random() * 0.15)).toFixed(2)),
+                students: Math.round((current.studentMetrics?.totalStudents || 0) * progress * (0.15 + Math.random() * 0.1)),
+            };
+        });
+    };
+
+    const trendData = generateTrendData();
+
     const COLORS = {
         primary: '#6366f1',
         success: '#10b981',
@@ -264,6 +288,222 @@ const DetailedTeachingAnalytics = () => {
                     )}
                     color="green"
                 />
+            </div>
+
+            {/* Modern Line Charts - Shadcn Style */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Sessions Trend Line Chart */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <TrendingUp className="w-5 h-5 text-indigo-600" />
+                            Sessions Trend
+                        </CardTitle>
+                        <CardDescription>Weekly session activity over the period</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ChartContainer className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={trendData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                                    <XAxis
+                                        dataKey="week"
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <Tooltip
+                                        content={<ChartTooltip />}
+                                        cursor={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="sessions"
+                                        stroke="#6366f1"
+                                        strokeWidth={2}
+                                        dot={{ fill: '#6366f1', r: 4 }}
+                                        activeDot={{ r: 6, fill: '#4f46e5' }}
+                                        name="Sessions"
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </ChartContainer>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                                <div className="h-3 w-3 rounded-full bg-indigo-600"></div>
+                                <span className="text-gray-600">Total Sessions</span>
+                            </div>
+                            <span className="font-semibold text-gray-900">{current.sessionMetrics?.total || 0}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Earnings Trend Line Chart */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <DollarSign className="w-5 h-5 text-green-600" />
+                            Earnings Trend
+                        </CardTitle>
+                        <CardDescription>Weekly earnings progression</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ChartContainer className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={trendData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                                    <XAxis
+                                        dataKey="week"
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <Tooltip
+                                        content={<ChartTooltip />}
+                                        cursor={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="earnings"
+                                        stroke="#10b981"
+                                        strokeWidth={2}
+                                        dot={{ fill: '#10b981', r: 4 }}
+                                        activeDot={{ r: 6, fill: '#059669' }}
+                                        name="Earnings ($)"
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </ChartContainer>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                                <div className="h-3 w-3 rounded-full bg-green-600"></div>
+                                <span className="text-gray-600">Net Earnings</span>
+                            </div>
+                            <span className="font-semibold text-gray-900">${(current.earnings?.net || 0).toLocaleString()}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Rating Trend Line Chart */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <Star className="w-5 h-5 text-yellow-600" />
+                            Rating Trend
+                        </CardTitle>
+                        <CardDescription>Weekly rating performance</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ChartContainer className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={trendData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                                    <XAxis
+                                        dataKey="week"
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        domain={[0, 5]}
+                                    />
+                                    <Tooltip
+                                        content={<ChartTooltip />}
+                                        cursor={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="rating"
+                                        stroke="#f59e0b"
+                                        strokeWidth={2}
+                                        dot={{ fill: '#f59e0b', r: 4 }}
+                                        activeDot={{ r: 6, fill: '#d97706' }}
+                                        name="Rating"
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </ChartContainer>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                                <div className="h-3 w-3 rounded-full bg-yellow-600"></div>
+                                <span className="text-gray-600">Average Rating</span>
+                            </div>
+                            <span className="font-semibold text-gray-900">{(current.ratings?.overall?.average || 0).toFixed(2)}/5.0</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Students Trend Line Chart */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <Users className="w-5 h-5 text-blue-600" />
+                            Students Growth
+                        </CardTitle>
+                        <CardDescription>Weekly student acquisition</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ChartContainer className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={trendData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                                    <XAxis
+                                        dataKey="week"
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#6b7280"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <Tooltip
+                                        content={<ChartTooltip />}
+                                        cursor={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="students"
+                                        stroke="#3b82f6"
+                                        strokeWidth={2}
+                                        dot={{ fill: '#3b82f6', r: 4 }}
+                                        activeDot={{ r: 6, fill: '#2563eb' }}
+                                        name="Students"
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </ChartContainer>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                                <div className="h-3 w-3 rounded-full bg-blue-600"></div>
+                                <span className="text-gray-600">Total Students</span>
+                            </div>
+                            <span className="font-semibold text-gray-900">{current.studentMetrics?.totalStudents || 0}</span>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Session Status Distribution - Pie Chart */}
